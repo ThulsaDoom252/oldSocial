@@ -1,6 +1,6 @@
 import React from 'react';
 
-function WallNavbar({0: activeBlock, 1: handleClick}) {
+const WallNavbar = ({0: activeBlock, 1: handleClick}) => {
     return (
         <div className={"profile-page-navBar-container"}>
             <button onClick={() => handleClick("Posts")}
