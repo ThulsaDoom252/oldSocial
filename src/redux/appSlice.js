@@ -1,4 +1,4 @@
-import {loginTC} from "./auth-reducer";
+import {loginTC} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 const appSlice = createSlice({
@@ -42,9 +42,15 @@ export const {initializeAC} = appSlice.actions
 //THUNKS
 export const initializeTC = createAsyncThunk('initializing-thunk',
     async (_, {dispatch}) => {
-        const promise = dispatch(loginTC())
-        Promise.all([promise]).then(() => {
-            dispatch(initializeAC())
-        })
+        debugger
+        try {
+            const promise = dispatch(loginTC())
+            Promise.all([promise]).then(() => {
+                dispatch(initializeAC())
+            })
+        } catch (error) {
+            console.log(error)
+        }
+
     })
 

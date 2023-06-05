@@ -42,18 +42,20 @@ const ProfileData = ({
             setEditMode(true)
         } else if (editMode && !errors.description) {
             setEditMode(false)
-            updateProfileFunc()
+            handleUpdateProfile()
         }
     }
 
-    const updateProfileFunc = (applicant = applicantHook) => {
-        updateProfile(userId, values.about,
-            applicant, values.applicantDescription,
-            fullName, contacts.github,
-            contacts.vk, contacts.facebook,
-            contacts.instagram, contacts.twitter,
-            contacts.website,
-            contacts.youtube, contacts.mainlink)
+    const handleUpdateProfile = (applicant = applicantHook) => {
+        updateProfile({
+            userId, about: values.about,
+            isApplicant: applicant, description: values.applicantDescription,
+            name: fullName, github: contacts.github,
+            vk: contacts.vk, facebook: contacts.facebook,
+            instagram: contacts.instagram, twitter: contacts.twitter,
+            website: contacts.website,
+            youtube: contacts.youtube, mainlink: contacts.mainlink
+        })
     }
 
     const applicantRelay = () => applicantHook ? setApplicantHook(false) : setApplicantHook(true)
@@ -61,9 +63,9 @@ const ProfileData = ({
     const applicantUpdate = () => {
         applicantRelay()
         if (!applicantHook) {
-            updateProfileFunc(true)
+            handleUpdateProfile(true)
         } else {
-            updateProfileFunc(false)
+            handleUpdateProfile(false)
         }
     }
 

@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
-import {connect} from "react-redux";
+import React from 'react';
+import {useSelector} from "react-redux";
 import {
+    changeContactValue,
     changeCurrentContactDataAC,
     setUserTC,
     showOverlayAC,
@@ -8,59 +9,42 @@ import {
 } from "../../redux/profile/profileSlice";
 import {AiOutlineCheck, AiOutlineClose} from "react-icons/all";
 
-function Overlay({
-                     photos,
-                     currentPhoto,
-                     currentContactId: contactId,
-                     currentContact,
-                     showOverlayPhotoViewport,
-                     showOverlayAC,
-                     profile: {
-                         userId, aboutMe, lookingForAJob, lookingForAJobDescription, fullName,
-                         contacts: {vk, github, instagram, facebook, mainLink, website, youtube, twitter}
-                     },
-                     changeCurrentContactDataAC,
-                     updateProfileTC: updateProfile,
-                     setUserTC: setUser,
-                 }) {
+const Overlay = ({dispatch}) => {
+    const staticPhotos = useSelector(state => state.profilePage.defaultPhotos)
+    const selectedPhoto = useSelector(state => state.profilePage.selectedPhoto)
+    const selectedContact = useSelector(state => state.profilePage.selectedContact)
+    const selectedContactId = useSelector(state => state.profilePage.selectedContactId)
+    const photoViewPort = useSelector(state => state.profilePage.showOverlayPhotoViewport)
+    const profile = useSelector(state => state.profilePage.profile)
 
-    // updated
+    const {userId} = profile
 
-    let contacts = [
-        {id: "youtube", value: youtube},
-        {id: "facebook", value: facebook},
-        {id: "vk", value: vk},
-        {id: "instagram", value: instagram},
-        {id: "twitter", value: twitter},
-        {id: "website", value: website},
-        {id: "github", value: github},
-        {id: "mainLink", value: mainLink}
-    ]
+    const handleChangeSelectedContact = (e) => {
+        dispatch(changeCurrentContactDataAC(e.currentTarget.value))
+    }
 
-    const submitData = () => {
-        contacts.forEach(contact => contact.id === contactId ? contact.value = currentContact : null)
-        updateProfile(userId, aboutMe, lookingForAJob, lookingForAJobDescription, fullName, contacts[6].value, contacts[2].value, contacts[1].value, contacts[3].value, contacts[4].value, contacts[5].value, contacts[0].value, contacts[7].value)
-        setUser(userId)
+    const handleSubmitData = async () => {
+        dispatch(changeContactValue({selectedContactId, selectedContact}))
+        dispatch(updateProfileTC({}))
+        dispatch(setUserTC(userId))
+        dispatch(showOverlayAC(false))
     }
     return (
-        <div className={"overlay"} onClick={() => showOverlayPhotoViewport && showOverlayAC(false)}>
-            <div hidden={!showOverlayPhotoViewport} className={"profile-photo-viewPort"}>
-                <img className={"currently-viewing-photo"} src={photos[currentPhoto]} alt="photo"/>
+        <div className={"overlay"} onClick={() => photoViewPort && dispatch(showOverlayAC(false))}>
+            <div hidden={!photoViewPort} className={"profile-photo-viewPort"}>
+                <img className={"currently-viewing-photo"} src={staticPhotos[selectedPhoto]} alt="photo"/>
             </div>
-            <form action="" hidden={showOverlayPhotoViewport}>
+            <form action="" hidden={photoViewPort}>
                 <div className={"profile-contact-viewport"}>
-                    <input type="text" value={currentContact}
-                           onChange={(e) => changeCurrentContactDataAC(e.currentTarget.value)}
+                    <input type="text" value={selectedContact}
+                           onChange={handleChangeSelectedContact}
                            placeholder={"enter contact info here"} className={"currently-viewing-contact"}/>
                     <p className={"currently-viewing-contact-submit-button-container"}>
                         <button style={{"color": "red"}} className={"currently-viewing-contact-button"}
                                 onClick={() => showOverlayAC(false)}>
                             <AiOutlineClose/></button>
                         <button style={{"color": "green"}} className={"currently-viewing-contact-button"}
-                                onClick={() => {
-                                    submitData()
-                                    showOverlayAC(false)
-                                }}>
+                                onClick={handleSubmitData}>
                             <AiOutlineCheck/></button>
                     </p>
                 </div>
@@ -69,20 +53,4 @@ function Overlay({
     );
 }
 
-let mapStateToProps = state => {
-    return {
-        photos: state.profilePage.defaultPhotos,
-        currentPhoto: state.profilePage.selectedPhoto,
-        currentContact: state.profilePage.selectedContact,
-        currentContactId: state.profilePage.selectedContactId,
-        showOverlayPhotoViewport: state.profilePage.showOverlayPhotoViewport,
-        profile: state.profilePage.profile,
-    }
-}
-
-export default connect(mapStateToProps, {
-    showOverlayAC,
-    updateProfileTC,
-    changeCurrentContactDataAC,
-    setUserTC
-})(Overlay);
+export default Overlay

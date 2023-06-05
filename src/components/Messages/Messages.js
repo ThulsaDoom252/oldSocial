@@ -3,7 +3,7 @@ import {compose} from "redux";
 import {connect} from "react-redux";
 import authHoc from "../HOC/authHoc";
 import {BiMessageAltEdit, FiInfo, FiPhoneCall, FiVideo} from "react-icons/all";
-import {getRandomUsersTC} from "../../redux/dialogs-reducer";
+import {getRandomUsersTC} from "../../redux/dialogsSlice";
 import {nightModeStyles} from "../../common/nightModeStyles";
 
 const Messages = (props) => {

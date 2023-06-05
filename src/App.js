@@ -1,12 +1,11 @@
 import React, {useEffect} from "react";
 import './App.css';
-import Header from "./components/Header/Header";
 import Profile from "./components/Profile/Profile";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Settings from "./components/Settings/Settings";
 import News from "./components/News";
 import Login from "./components/Login/Login";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import Initialize from "./components/Initialize";
 import {initializeTC} from "./redux/appSlice";
 import NotFound from "./components/common/NotFound";
@@ -17,10 +16,18 @@ import Friends from "./components/Friends";
 import EditProfileData from "./components/Profile/ProfileCenterPart/EditProfile/EditProfileData";
 import Photos from "./components/Gallery";
 import {nightModeStyles} from "./common/nightModeStyles";
+import {showOverlayAC} from "./redux/profile/profileSlice";
+import HeaderContainer from "./components/Header/HeaderContainer";
 
-function App(props) {
-    const {nightMode, showMobileVersion} = props
-    const navbar = document.querySelectorAll("header-navbar")
+const App = () => {
+    const dispatch = useDispatch()
+    const auth = useSelector(state => state.auth.isLogged)
+    const overlayVisible = useSelector(state => state.profilePage.showOverlay)
+    const initialized = useSelector(state => state.app.initialized)
+    const nightMode = useSelector(state => state.settings.nightMode)
+    const showMobileVersion = useSelector(state => state.settings.showMobileVersion)
+
+
     useEffect(() => {
         if (nightMode) {
             document.body.style = "background: linear-gradient(360deg, black, #2a2828, #121a34, #252a2d)"
@@ -31,11 +38,10 @@ function App(props) {
     }, [nightMode])
 
     useEffect(() => {
-        props.initializeTC()
-        console.log('once')
+        dispatch(initializeTC())
     }, [])
 
-    if (!props.initialized) {
+    if (!initialized) {
         return (
             <div className={"container"}>
                 <Initialize/>
@@ -46,16 +52,16 @@ function App(props) {
         return (
             <BrowserRouter>
                 <div>
-                    {props.overlayVisible && <Overlay/>}
-                    <div style={{"width": showMobileVersion &&  "800px"}} className={props.auth && "wrapper"}>
+                    {overlayVisible && <Overlay {...{dispatch}}/>}
+                    <div style={{"width": showMobileVersion && "800px"}} className={auth && "wrapper"}>
                         <section style={nightMode ? nightModeStyles.section : null}
-                                 className={props.auth && "section-content"}>
-                            <Header/>
+                                 className={auth && "section-content"}>
+                            <HeaderContainer {...{dispatch}}/>
                             <Routes>
                                 <Route path={"/profile/:userId"} element={<Profile
                                     nightMode={nightMode}
-                                    overlay={props.overlayVisible}
-                                    showOverlay={props.showOverlayAC}/>}/>
+                                    overlay={overlayVisible}
+                                    showOverlay={showOverlayAC}/>}/>
                                 <Route path="/messages" element={<Messages nightMode={nightMode}/>}/>
                                 <Route path="/gallery" element={<Photos nightMode={nightMode}/>}/>
                                 <Route path="" element={<Login/>}/>
@@ -75,14 +81,5 @@ function App(props) {
     }
 }
 
-let mapStateToProps = (state) => {
-    return {
-        initialized: state.app.initialized,
-        auth: state.auth.isLogged,
-        overlayVisible: state.profilePage.showOverlay,
-        nightMode: state.settings.nightMode,
-        showMobileVersion: state.settings.showMobileVersion,
-    }
-}
 
-export default connect(mapStateToProps, {initializeTC})(App);
+export default App;

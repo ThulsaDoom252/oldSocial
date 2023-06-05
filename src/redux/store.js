@@ -1,7 +1,7 @@
 import usersReducer from "./userSlice";
-import authReducer from "./auth-reducer";
+import authReducer from "./authSlice";
 import appSlice from "./appSlice";
-import dialogsReducer from "./dialogs-reducer";
+import dialogsReducer from "./dialogsSlice";
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import profileSlice from "./profile/profileSlice";
 import commonSlice from "./commonSlice";

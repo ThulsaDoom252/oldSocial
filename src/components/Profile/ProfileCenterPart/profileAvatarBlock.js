@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 import * as Yup from "yup";
 import {fetchUiSpin} from "../../../redux/commonSlice";
 
-function ProfileAvatarBlock({
+const ProfileAvatarBlock = ({
                                 0: {
                                     userId,
                                     fullName,
@@ -27,12 +27,12 @@ function ProfileAvatarBlock({
                                 8: updatePhoto,
                                 9: fetchPersonalData,
                                 10: fetchStatusData,
-                            }) {
+                            }) => {
 
 
     //Direct upload photo
     const hiddenFileInput = React.useRef(null);
-    let uploadPhoto = (e) => updatePhoto(e.target.files[0])
+    const uploadPhoto = (e) => updatePhoto(e.target.files[0])
     const handleClick = event => isCurrentUser ? hiddenFileInput.current.click() : null;
 
     const [nameEditMode, setNameEditMode] = useState(false)
@@ -55,14 +55,14 @@ function ProfileAvatarBlock({
             about: aboutMe,
             isApplicant: lookingForAJob,
             description: lookingForAJobDescription,
-            website: website,
-            vk: vk,
-            facebook: facebook,
-            twitter: twitter,
-            instagram: instagram,
-            github: github,
-            mainlink: mainlink,
-            youtube: youtube,
+            website,
+            vk,
+            facebook,
+            twitter,
+            instagram,
+            github,
+            mainlink,
+            youtube,
         },
 
         validationSchema: Yup.object({
@@ -81,30 +81,34 @@ function ProfileAvatarBlock({
         }),
     })
 
+    const values = formik.values
+    window.link = values
+
     const toggleProfileDataEditMode = (editMode, setEditMode) => {
         if (!editMode && isCurrentUser && directEditMode) {
             setEditMode(true)
         } else if (editMode && !formik.errors.name) {
             setEditMode(false)
-            updateProfile(userId, aboutInfo, (jobInfo !== "enter job description"), jobInfo, formik.values.name, formik.values.github, formik.values.vk, formik.values.facebook, formik.values.instagram,
-                formik.values.twitter, formik.values.website, formik.values.youtube, formik.values.mainlink
-            )
+            updateProfile({
+                userId,
+                about: aboutInfo,
+                isApplicant: values.lookingForAJob,
+                description: jobInfo,
+                name: values.name,
+                github: values.github,
+                vk: values.vk,
+                facebook: values.facebook,
+                instagram: values.instagram,
+                twitter: values.twitter,
+                website: values.website,
+                youtube: values.youtube,
+                mainlink: values.mainlink
+            })
         }
     }
 
-    const toggleContactEditMode = (editMode, setEditMode) => {
-        if (isCurrentUser && !editMode && directEditMode) {
-            setEditMode(true)
-            toggleOverLay(true)
-        } else {
-            setEditMode(false)
-            toggleOverLay(false)
-        }
-    }
-
-    let aboutInfo = formik.values.about === "" ? "no info" : formik.values.about
-    let jobInfo = formik.values.jobDescription === "" ? "enter job description" : formik.values.jobDescription
-    const errorStyle = "profile-page-input-error"
+    const aboutInfo = formik.values.about === "" ? "no info" : formik.values.about
+    const jobInfo = formik.values.jobDescription === "" ? "enter job description" : formik.values.jobDescription
 
     useEffect(() => {
         formik.setFieldValue("name", fullName)
@@ -124,11 +128,8 @@ function ProfileAvatarBlock({
         formik.setFieldValue("twitter", twitter)
     }, [youtube, instagram, facebook, mainlink, github, vk, website, twitter])
 
-    let errors = formik.errors
+    const errors = formik.errors
     const contactClass = "profile-page-left-contact"
-    let values = formik.values
-
-    const isContactEditMode = youtubeEditMode || instagramEditMode || githubEditMode || facebookEditMode || twitterEditMode || websiteEditMode || vkEditMode
 
     const contactsData = [
         {

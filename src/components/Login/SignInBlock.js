@@ -2,25 +2,25 @@ import React from 'react';
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {connect} from "react-redux";
-import {getCaptchaTC,  mainLoginTC} from "../../redux/auth-reducer";
-import login from "./Login";
+import {getCaptchaTC, mainLoginTC} from "../../redux/authSlice";
 import {Link} from "react-router-dom";
 import {authDataFetchingAC} from "../../redux/commonSlice";
 
 const SignInBlock = (props) => {
     const formik = useFormik({
         initialValues: {
-            login: '',
+            email: '',
             password: '',
             rememberMe: false,
             antiBotSymbols: '',
         },
         validationSchema: Yup.object({
-            login: Yup.string().max(50, 'login must be shorter than 10 characters').required(),
+            email: Yup.string().max(50, 'email must be shorter than 10 characters').required(),
             password: Yup.string().min(6, 'password must contain at least 6 characters').required(),
         }),
-        onSubmit: ({login, password, rememberMe, antiBotSymbols}) => {
-            props.mainLoginTC(login, password, rememberMe, antiBotSymbols)
+        onSubmit: ({email, password, rememberMe, antiBotSymbols}) => {
+            debugger
+            props.mainLoginTC({email, password, rememberMe, antiBotSymbols})
         }
     })
 
@@ -39,13 +39,13 @@ const SignInBlock = (props) => {
                     <p className={"login-page-welcome-label"}>Welcome to React students community</p>
                     <p className={"login-page-signIn-label"}>Sign in</p>
                     <div className={"login-page-input-container"}>
-                        {errors.login && touched.login ?
-                            <p className={"login-page-input-error"}>{errors.login}</p> : null}
+                        {errors.email && touched.email ?
+                            <p className={"login-page-input-error"}>{errors.email}</p> : null}
                         <input className={"login-page-inputs"}
-                               id={"login"}
+                               id={"email"}
                                type="text"
                                placeholder={"userName"}
-                               value={values.login}
+                               value={values.email}
                                onChange={handleChange}
                                onBlur={handleBlur}
                         />

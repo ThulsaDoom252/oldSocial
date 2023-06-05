@@ -1,82 +1,44 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {useFormik} from 'formik'
 import * as Yup from "yup";
-import {connect, useDispatch} from "react-redux";
+import {connect} from "react-redux";
 import {setUserTC, updatePhotoTC, updateProfileTC} from "../../../../redux/profile/profileSlice";
 import authHoc from "../../../HOC/authHoc";
 
-function EditProfileData({
-                             auth,
-                             contacts: {facebook, instagram, youtube, github, vk, twitter, mainlink, website},
-                             currentId: userId,
+const EditProfileData = ({
                              email,
-                             photos: {large: largePhoto},
-                             profile: {
-                                 fullName,
-                                 aboutMe,
-                                 lookingForAJob: applicant,
-                                 lookingForAJobDescription: description
-                             },
-                             setUserTC: setUser,
-                             updatePhotoTC: updatePhoto,
-                             updateProfileTC: updateProfile,
-                         }) {
+                             profile,
+                             contacts,
+                             photos,
+                             updatePhotoTC,
+                             updateProfileTC,
+                         }) => {
 
-    useEffect(() => {
-        setUserTC(userId)
-    }, [])
+
+    if (!profile) return <div>Loading...</div>
+
+    const {fullName: name, aboutMe: about, lookingForAJob: applicant, lookingForAJobDescription: description} = profile
+    const [facebook, website, vk, twitter, instagram, youtube, github, mainLink] = contacts
+    const {large: largePhoto} = photos
 
     const hiddenFileInput = React.useRef(null);
 
-    let uploadPhoto = (e) => {
-        updatePhoto(e.target.files[0])
+    const uploadPhoto = (e) => {
+        updatePhotoTC(e.target.files[0])
     }
     const handleClick = event => hiddenFileInput.current.click()
 
-    let [nameHook, setNameHook] = useState(fullName)
-    let [aboutHook, setAboutHook] = useState(aboutMe)
-    let [applicantHook, setApplicantHook] = useState(applicant)
-    let [descriptionHook, setDescriptionHook] = useState(description)
-    let [websiteHook, setWebsiteHook] = useState(website)
-    let [youtubeHook, setYoutubeHook] = useState(youtube)
-    let [instagramHook, setInstagramHook] = useState(instagram)
-    let [facebookHook, setFacebookHook] = useState(facebook)
-    let [gitHubHook, setGitHubHook] = useState(github)
-    let [mainlinkHook, setMainlinkHook] = useState(mainlink)
-    let [vkHook, setVkHook] = useState(vk)
-    let [twitterHook, setTwitterHook] = useState(twitter)
-
-    useEffect(() => {
-        setNameHook(fullName)
-        setAboutHook(aboutMe)
-        setApplicantHook(applicant)
-        setDescriptionHook(description)
-        setWebsiteHook(website)
-        setYoutubeHook(youtube)
-        setInstagramHook(instagram)
-        setFacebookHook(facebook)
-        setGitHubHook(github)
-        setMainlinkHook(mainlink)
-        setVkHook(vk)
-        setTwitterHook(twitter)
-    }, [fullName, aboutMe, applicant, description, website, youtube, instagram, facebook, github, mainlink, twitter, vk])
-
-
-    const urlError = Yup.string().matches(/((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/, 'Enter correct url!').nullable()
-    const {handleSubmit, handleChange, values, touched, errors} = useFormik({
+    const {handleSubmit, handleChange, values, errors} = useFormik({
         initialValues: {
-            name: nameHook,
-            about: aboutHook,
-            isApplicant: applicantHook,
-            description: descriptionHook,
-            website: websiteHook,
-            vk: vkHook,
-            facebook: facebookHook,
-            twitter: twitterHook,
-            instagram: instagramHook,
-            github: gitHubHook,
-            mainlink: mainlinkHook,
-            youtube: youtubeHook,
+            name, about, applicant, description,
+            website: website.value,
+            vk: vk.value,
+            facebook: facebook.value,
+            twitter: twitter.value,
+            instagram: instagram.value,
+            github: github.value,
+            mainlink: mainLink.value,
+            youtube: youtube.value,
 
         },
         validationSchema: Yup.object({
@@ -99,21 +61,21 @@ function EditProfileData({
                        github,
                        mainlink
                    }) => {
-            updateProfile(userId, about, isApplicant, description, name, github, vk, facebook, instagram,
+            updateProfileTC({
+                about, isApplicant, description, name, github, vk, facebook, instagram,
                 twitter, website, youtube, mainlink
-            )
+            })
+
         }
     })
 
+    const contactsData = contacts.map(contact => ({
+        ...contact,
+        value: values[contact.id],
+        error: errors[contact.id],
+        change: handleChange
+    }));
 
-    const contactsData = [{value: values.youtube, id: "youtube", icon: null, change: handleChange},
-        {value: values.instagram, id: "instagram", icon: null, change: handleChange, error: errors.instagram},
-        {value: values.facebook, id: "facebook", icon: null, change: handleChange, error: errors.facebook},
-        {value: values.vk, id: "vk", icon: null, change: handleChange, error: errors.vk},
-        {value: values.twitter, id: "twitter", icon: null, change: handleChange, error: errors.twitter},
-        {value: values.github, id: "github", icon: null, change: handleChange, error: errors.github},
-        {value: values.website, id: "website", icon: null, change: handleChange, error: errors.website},
-    ]
     return (
         <form onSubmit={handleSubmit}>
             <div className={"edit-profile-page-container"}>
@@ -123,7 +85,8 @@ function EditProfileData({
                     <input ref={hiddenFileInput}
                            hidden={true} type={"file"}
                            onChange={uploadPhoto}/>
-                    <button type="button" className={"upload-avatar-button"} onClick={handleClick}>Upload photo</button>
+                    <button type="button" className={"upload-avatar-button"} onClick={handleClick}>Upload photo
+                    </button>
                     <p className={"edit-profile-email"}>{email}</p>
                 </div>
                 <div className={"edit-profile-data-part"}>
@@ -213,13 +176,12 @@ function EditProfileData({
     );
 }
 
-let mapStateToProps = (state) => {
+const mapStateToProps = (state) => {
     return {
         email: state.auth.email,
         contacts: state.profilePage.contacts,
         photos: state.profilePage.photos,
         auth: state.auth.isLogged,
-        currentId: state.auth.id,
         profile: state.profilePage.profile,
     }
 }

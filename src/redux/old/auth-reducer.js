@@ -19,6 +19,7 @@ export const captchaAc = (get) => ({type: GET_CAPTCHA, get})
 export const errorMessageAC = (message) => ({type: ERROR_CODE_MESSAGE, message})
 
 //STATE
+
 const initialState = {
     id: null,
     email: null,
@@ -29,7 +30,6 @@ const initialState = {
     errorMessage: null,
 }
 
-//REDUCER
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_MY_DATA:
@@ -38,7 +38,6 @@ const authReducer = (state = initialState, action) => {
                 id: action.data.id,
                 email: action.data.email,
                 login: action.data.login,
-
             }
         default:
             return state
@@ -102,7 +101,7 @@ export const loginTC = () => {
     return async (dispatch) => {
         await dispatch(authDataFetchingAC(true))
         const response = await login.auth()
-        const {id, email, login : userLogin} = response.data
+        const {id, email, login: userLogin} = response.data
         const {resultCode} = response
         debugger
         if (resultCode === 0) {

@@ -25,7 +25,7 @@ const Profile = (props) => {
         fetchAvatar,
         showMobileVersion,
         profile,
-        updateProfileTC: updateProfile,
+        updateProfileTC,
         directEditMode,
         defaultAvatar,
         friends,
@@ -53,9 +53,9 @@ const Profile = (props) => {
     return (
         <div className={"profile-main-container"}>
             {!showMobileVersion &&
-                <ProfileLeftPart {...[profile, isCurrentUser, email, updateProfile, directEditMode, nightMode, fetchPersonalData, fetchAuthData, hideEmail]}/>}
+                <ProfileLeftPart {...[profile, isCurrentUser, email, updateProfileTC, directEditMode, nightMode, fetchPersonalData, fetchAuthData, hideEmail]}/>}
             <ProfileCenterPart  {...[profile, isCurrentUser, notFound, directEditMode,
-                updateProfile, defaultAvatar, status, updateStatus, defaultPhotos,
+                updateProfileTC, defaultAvatar, status, updateStatus, defaultPhotos,
                 toggleOverlay, friends, nightMode, hideProfileWall, updatePhoto, showMobileVersion, fetchPersonalData, fetchStatusData, fetchAvatar]}/>
             {!showMobileVersion &&
                 <ProfileRightPart {...[isCurrentUser, defaultAvatar, friends, defaultPhotos, toggleOverlay,
@@ -64,7 +64,7 @@ const Profile = (props) => {
     )
 }
 
-let mapStateToProps = (state) => {
+const mapStateToProps = (state) => {
     return {
         profile: state.profilePage.profile,
         fetchPersonalData: state.common.fetchPersonalData,

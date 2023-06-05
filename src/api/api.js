@@ -103,14 +103,15 @@ export const profileApi = {
     //     })
     // },
 
-    updateProfile(userid, about, applicant, description,
-                  name, git, vk, fb, inst, twit,
-                  web, youtube, link) {
+    updateProfile(userid, aboutMe, lookingForAJob, LookingForAJobDescription,
+                  fullName, github, vk, facebook, instagram, twitter,
+                  website, youtube, mainLink) {
+        debugger
         return instance.put('profile/', {
-            userid, aboutMe: about, lookingForAJob: applicant,
-            LookingForAJobDescription: description, fullName: name, contacts: {
-                github: git, vk, facebook: fb, instagram: inst, twitter: twit,
-                website: web, youtube, mainLink: link
+            userid, aboutMe, lookingForAJob,
+            LookingForAJobDescription, fullName, contacts: {
+                github, vk, facebook, instagram, twitter,
+                website, youtube, mainLink
             }
         })
 

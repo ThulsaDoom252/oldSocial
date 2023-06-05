@@ -292,9 +292,13 @@ input:-webkit-autofill:active {
 }
 
 
-.header-navbar-button {
+.header-navbar-button, .header-navbar-button-active {
     border-right: #ffffff solid 3px;
     padding-left: 5px;
+}
+
+.header-navbar-button-active {
+    text-decoration: underline;
 }
 
 .header-navbar-button:hover {

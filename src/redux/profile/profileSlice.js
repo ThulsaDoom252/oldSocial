@@ -12,16 +12,16 @@ import photo10 from "./photo-10.png"
 
 import React from "react";
 import {avatarDataFetchingAC, personalDataFetchingAC, statusDataFetchingAC} from "../commonSlice";
-import {createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 const profileSlice = createSlice({
-    name: 'auth-slice',
+    name: 'profile',
     initialState: {
         avatar: null,
         avatarLarge: null,
-        directEditMode: true,
+        directEditMode: false,
         profile: '',
-        contacts: '',
+        contacts: [],
         showOverlay: false,
         showOverlayPhotoViewport: false,
         selectedPhoto: null,
@@ -71,15 +71,33 @@ const profileSlice = createSlice({
         },
         setUserProfile(state, action) {
             const {profile} = action.payload
+            const contacts = profile.contacts
+            const contactsArray = []
             state.profile = profile
             state.photos = profile.photos
-            state.contacts = profile.contacts
+            Object.keys(contacts).forEach(contact => {
+                contactsArray.push({id: contact, value: contacts[contact]})
+            })
+            state.contacts = [...contactsArray]
         },
         statusAC(state, action) {
             state.status = action.payload
         },
         changeCurrentContactDataAC(state, action) {
             state.selectedContact = action.payload
+        },
+        changeContactValue(state, action) {
+            const {selectedContactId, selectedContact} = action.payload
+            new Promise((resolve) => {
+                state.contacts = state.contacts.map(contact => contact.id === selectedContactId ? {
+                    ...contact,
+                    value: selectedContact
+                } : {...contact})
+                console.log(state.contacts)
+                debugger
+                resolve()
+            }).then(() => console.log('success'))
+            return void 0
         },
         showOverlayAC(state, action) {
             const {toggleRelay, toggleViewPort, index, contactId, contactValue} = action.payload
@@ -91,18 +109,8 @@ const profileSlice = createSlice({
         },
         currentUserDataAC(state, action) {
             const {
-                name,
-                about,
-                applicant,
-                description,
-                github,
-                vk,
-                facebook,
-                instagram,
-                twitter,
-                site,
-                youtube,
-                link
+                name, about, applicant,
+                description, github, vk, facebook, instagram, twitter, site, youtube, link
             } = action.payload
             state.name = name
             state.about = about
@@ -132,32 +140,34 @@ export const {
     setUserProfile,
     statusErrorAC,
     statusAC,
+    changeContactValue,
     photoAC
 } = profileSlice.actions
 
 //THUNKS
-export const setUserTC = (userId) => {
-    return async (dispatch) => {
-        try {
-            await dispatch(personalDataFetchingAC(true))
-            const data = await apiCaller.setUsers(userId)
-            dispatch(setUserProfile({profile: data}))
-            dispatch(notFoundAC(false))
-            dispatch(personalDataFetchingAC(false))
-        } catch (error) {
-            dispatch(notFoundAC(true))
-        }
-    }
-}
 
-export const getStatusTC = (userId) => async (dispatch) => {
+
+export const setUserTC = createAsyncThunk('set-user-thunk', async (userId, {dispatch}) => {
+    try {
+        debugger
+        await dispatch(personalDataFetchingAC(true))
+        const data = await apiCaller.setUsers(userId)
+        dispatch(setUserProfile({profile: data}))
+        dispatch(notFoundAC(false))
+        dispatch(personalDataFetchingAC(false))
+    } catch (error) {
+        dispatch(notFoundAC(true))
+    }
+})
+
+export const getStatusTC = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
     dispatch(statusDataFetchingAC(true))
     const response = await profileApi.getStatus(userId)
     dispatch(statusAC(response.data))
     dispatch(statusDataFetchingAC(false))
-}
+})
 
-export const updateStatusTC = (status) => async (dispatch) => {
+export const updateStatusTC = createAsyncThunk('updateStatus-thunk', async (status, {dispatch}) => {
     dispatch(statusDataFetchingAC(true))
     const data = await profileApi.updateStatus(status)
     if (data.resultCode === 0) {
@@ -171,54 +181,107 @@ export const updateStatusTC = (status) => async (dispatch) => {
         }, 3000)
         dispatch(statusDataFetchingAC(false))
     }
-}
+})
 
-export const setCurrentUserDataTC = (userId) => async (dispatch) => {
+export const setCurrentUserDataTC = createAsyncThunk('set-current-user-data-thunk', async (userId, {dispatch}) => {
     const data = await apiCaller.setUsers(userId)
     dispatch(currentUserDataAC(data.fullName, data.aboutMe, data.lookingForAJob, data.lookingForAJobDescription,
-            data.contacts.github, data.contacts.vk, data.contacts.facebook, data.contacts.instagram, data.contacts.twitter,
-            data.contacts.website, data.contacts.youtube, data.contacts.mainLink),
-        dispatch(dataReceivedAC(true))
-    )
-}
+        data.contacts.github, data.contacts.vk, data.contacts.facebook, data.contacts.instagram, data.contacts.twitter,
+        data.contacts.website, data.contacts.youtube, data.contacts.mainLink))
+    dispatch(dataReceivedAC(true))
+})
 
-export const setAvatarTC = (userId) => async (dispatch) => {
+export const setAvatarTC = createAsyncThunk('set-avatar-thunk', async (userId, {dispatch}) => {
     dispatch(avatarDataFetchingAC(true))
     const data = await apiCaller.setUsers(userId)
     dispatch(avatarAC(data.photos.small))
     dispatch(avatarDataFetchingAC(false))
-}
+})
 
-export const updatePhotoTC = (photo) => async (dispatch) => {
+export const updatePhotoTC = createAsyncThunk('update-photo-thunk', async (photo, {dispatch}) => {
     dispatch(avatarDataFetchingAC(true))
     const response = await profileApi.updatePhoto(photo)
-
     if (response.data.resultCode === 0) {
         dispatch(photoAC({photo: response.data.data.photos}))
         dispatch(avatarAC(response.data.data.photos.small))
         dispatch(avatarDataFetchingAC(false))
-
     }
-}
+})
 
-export const updateProfileTC = (userid, about, applicant, description,
-                                name, git, vk, fb, inst, twit,
-                                web, youtube, link) => async (dispatch) => {
-    const response = await profileApi.updateProfile(userid, about, applicant, description,
-        name, git, vk, fb, inst, twit,
-        web, youtube, link)
-    if (response.data.resultCode === 0) {
-        dispatch(resultAC('success'))
-        setTimeout(() => {
-            dispatch(resultAC(null))
-        }, 2000)
-    } else {
-        dispatch(resultAC('error'))
-        setTimeout(() => {
-            dispatch(resultAC(null))
-        }, 2000)
+
+// userid, aboutMe, lookingForAJob,
+//     LookingForAJobDescription, fullName, contacts: {
+//     github, vk, facebook, instagram, twitter,
+//         website, youtube, mainLink
+
+export const updateProfileTC = createAsyncThunk('update-profile-thunk',
+    async ({
+               about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
+               website, youtube, mainlink
+           }, {dispatch, getState}) => {
+        debugger
+        const state = getState();
+        const {userId, aboutMe, lookingForAJob, lookingForAJobDescription, fullName} = state.profilePage.profile
+        const [facebookState, websiteState, vkState, twitterState, instagramState, youtubeState, githubState, mainlinkState] = state.profilePage.contacts
+        const aboutParam = about ? about : aboutMe
+        const isApplicantParam = isApplicant ? isApplicant : lookingForAJob
+        const descriptionParam = description ? description : lookingForAJobDescription
+        const fullNameParam = name ? name : fullName
+        const githubParam = github ? github : githubState.value
+        const facebookParam = facebook ? facebook : facebookState.value
+        const instagramParam = instagram ? instagram : instagramState.value
+        const vkParam = vk ? vk : vkState.value
+        const websiteParam = website ? website : websiteState.value
+        const mainLinkParam = mainlink ? mainlink : mainlinkState.value
+        const youtubeParam = youtube ? youtube : youtubeState.value
+        const twitterParam = twitter ? twitter : twitterState.value
+        const response = await profileApi.updateProfile(userId, aboutParam, isApplicantParam, descriptionParam,
+            fullNameParam, githubParam, vkParam, facebookParam, instagramParam, twitterParam,
+            websiteParam, youtubeParam, mainLinkParam)
+        debugger
+        if (response.data.resultCode === 0) {
+            dispatch(resultAC('success'))
+            debugger
+            setTimeout(() => {
+                dispatch(resultAC(null))
+            }, 2000)
+        } else {
+            dispatch(resultAC('error'))
+            setTimeout(() => {
+                dispatch(resultAC(null))
+            }, 2000)
+        }
     }
-}
+)
+
+
+// export const updateProfileTC = createAsyncThunk('update-profile-thunk',
+//     async ({
+//                userId, about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
+//                website, youtube, mainlink
+//            }, {dispatch, getState}) => {
+//         const state = getState();
+//         const profileState = state.profilePage;
+//         const profile = profileState.profile
+//         const contacts = profileState.contacts
+//         const response = await profileApi.updateProfile(userId, about, isApplicant, description,
+//             name, github, vk, facebook, instagram, twitter,
+//             website, youtube, mainlink)
+//         if (response.data.resultCode === 0) {
+//             dispatch(resultAC('success'))
+//             debugger
+//             setTimeout(() => {
+//                 dispatch(resultAC(null))
+//             }, 2000)
+//         } else {
+//             dispatch(resultAC('error'))
+//             setTimeout(() => {
+//                 dispatch(resultAC(null))
+//             }, 2000)
+//         }
+//     }
+// )
+
 
 
 

@@ -22,25 +22,37 @@ const LeftPart = ({
         }),
     })
 
-    useEffect(() => {
-        formik.setFieldValue("about", aboutMe)
-    }, [aboutMe])
+    // useEffect(() => {
+    //     if(aboutMe !== undefined) {
+    //         formik.setFieldValue("about", aboutMe)
+    //     } else {
+    //         void 0
+    //     }
+    // }, [aboutMe])
+
 
     const {handleChange, values} = formik
     const toggleEditMode = (editMode, setEditMode) => {
         if (isCurrentUser && !editMode && directEditMode) {
             setEditMode(true)
         } else if (editMode === true && !errors.about) {
+            debugger
             setEditMode(false)
-            updateProfile(
+            updateProfile({
                 userId,
-                (values.about ? values.about : "no info"),
-                lookingForAJob, lookingForAJobDescription,
-                fullName, contacts.github,
-                contacts.vk, contacts.facebook,
-                contacts.instagram, contacts.twitter,
-                contacts.website, contacts.youtube,
-                contacts.mainLink)
+                about: values.about ? values.about : "no info",
+                isApplicant: lookingForAJob,
+                description: lookingForAJobDescription,
+                name: fullName,
+                github: contacts.github,
+                vk: contacts.vk,
+                facebook: contacts.facebook,
+                instagram: contacts.instagram,
+                twitter: contacts.twitter,
+                website: contacts.website,
+                youtube: contacts.youtube,
+                mainLink: contacts.mainLink
+            })
         }
     }
 

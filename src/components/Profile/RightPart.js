@@ -29,7 +29,7 @@ const RightPart = (props) => {
                  className={"profile-page-right-part-photos-block"}>
                 <p className={"profile-page-right-part-photos-block-label"}><NavLink to={"/gallery"}>Latest
                     photos</NavLink></p>
-                {defaultPhotos.map((photo, index) => <span>
+                {defaultPhotos.map((photo, index) => <span key={index}>
                     <img onClick={() => toggleOverlay({toggleRelay: true, toggleViewPort: true, index})}
                          key={index}
                          className={"profile-page-right-part-photo"}
