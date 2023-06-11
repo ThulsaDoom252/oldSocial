@@ -3,7 +3,7 @@ import WallNavbar from "./WallNavbar";
 import WallSections from "./WallSections";
 import {useState} from "react";
 
-function ProfileWall(props) {
+const ProfileWall = (props) => {
     const {0: name, 1: {large: largePhoto}, 2: defaultAvatar} = props
     const [activeBlock, setActiveBlock] = useState('Posts')
     const handleClick = (number) => {

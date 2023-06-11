@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import './App.css';
-import Profile from "./components/Profile/Profile";
+import Profile from "./components/Profile/ProfileContainer";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Settings from "./components/Settings/Settings";
 import News from "./components/News";

@@ -4,9 +4,9 @@ import {
     FaRegComment,
 } from "react-icons/all";
 
-function ReactionsBar(props) {
-    let [likes, likesNumber] = useState(0)
-    let [dislikes, dislikesNumber] = useState(0)
+const ReactionsBar = (props) => {
+    const [likes, likesNumber] = useState(0)
+    const [dislikes, dislikesNumber] = useState(0)
 
     const randomNumberInRange = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
