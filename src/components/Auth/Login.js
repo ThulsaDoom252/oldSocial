@@ -2,12 +2,13 @@ import React, {useState} from "react";
 import {connect} from "react-redux";
 import {Navigate} from "react-router-dom";
 import SignUpBlock from "./SignUpBlock";
-import SignInBlock from "./SignInBlock";
+import SignInBlock from "./SignInContainer";
+import SignInContainer from "./SignInContainer";
 
 const LoginPage = ({id: currentUser, auth: loggedIn}) => {
     if (loggedIn) return <Navigate to={`/profile/${currentUser}`}/>
-    let [showSignInBlock, toggleShowSignInBlock] = useState(true)
-    let [signButtonDisabled, disableSignButton] = useState(false)
+    const [showSignInBlock, toggleShowSignInBlock] = useState(true)
+    const [signButtonDisabled, disableSignButton] = useState(false)
     const switchRelay = () => showSignInBlock ? toggleShowSignInBlock(false) : toggleShowSignInBlock(true)
     const disableRelay = () => {
         switchRelay()
@@ -47,13 +48,13 @@ const LoginPage = ({id: currentUser, auth: loggedIn}) => {
             </div>
             <div className={"login-page-right-part-container"}>
                 {!showSignInBlock && <SignUpBlock/>}
-                {showSignInBlock && <SignInBlock/>}
+                {showSignInBlock && <SignInContainer/>}
             </div>
         </div>
     )
 }
 
-let mapStateToProps = (state) => {
+const mapStateToProps = (state) => {
     return {
         id: state.auth.id,
         auth: state.auth.isLogged,

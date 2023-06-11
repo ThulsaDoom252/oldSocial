@@ -12,7 +12,7 @@ const HeaderContainer = ({dispatch}) => {
     const userName = useSelector(state => state.auth.login)
     const nightMode = useSelector(state => state.settings.nightMode)
     const userId = useSelector(state => state.auth.id)
-    const currentUserAvatar = useSelector(state => state.profilePage.currentUserAvatar)
+    const avatar = useSelector(state => state.profilePage.avatar)
     const fetching = useSelector(state => state.common.fetchAuthData)
     useEffect(() => {
         setAvatarTC(`${userId}`)
@@ -27,7 +27,7 @@ const HeaderContainer = ({dispatch}) => {
         avatarAC(null)
     }
     return (
-        <Header {...{isLogged, userName, nightMode, userId, currentUserAvatar, fetching, handleLogOut}}/>
+        <Header {...{isLogged, userName, nightMode, userId, avatar, fetching, handleLogOut}}/>
     );
 };
 

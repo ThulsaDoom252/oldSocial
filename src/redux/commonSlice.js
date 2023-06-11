@@ -12,16 +12,12 @@ const commonSlice = createSlice({
     name: 'common-slice',
     initialState: {
         fetchPersonalData: false,
-        fetchAuthData: false,
         fetchStatusData: false,
         fetchAvatar: false,
     },
     reducers: {
         personalDataFetchingAC(state, action) {
             state.fetchPersonalData = action.payload
-        },
-        authDataFetchingAC(state, action) {
-            state.fetchAuthData = action.payload
         },
         statusDataFetchingAC(state, action) {
             state.fetchStatusData = action.payload
@@ -35,7 +31,6 @@ const commonSlice = createSlice({
 export default commonSlice.reducer
 export const {
     personalDataFetchingAC,
-    authDataFetchingAC,
     statusDataFetchingAC,
     avatarDataFetchingAC
 } = commonSlice.actions

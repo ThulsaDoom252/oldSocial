@@ -1,10 +1,12 @@
 import {loginTC} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {getStatusTC, setCurrentUserDataTC, setUserTC} from "./profile/profileSlice";
 
 const appSlice = createSlice({
     name: 'app-slice',
     initialState: {
         initialized: false,
+        profileInitialized: false,
         hideNonFunctionalPages: false,
         nightMode: false,
         nightModeColors: {
@@ -33,16 +35,18 @@ const appSlice = createSlice({
         toggleNonFunctionalPages(state, action) {
             state.hideNonFunctionalPages = action.payload
         },
+        initializeProfile(state, action) {
+            state.profileInitialized = action.payload
+        }
     },
 })
 
 export default appSlice.reducer
-export const {initializeAC} = appSlice.actions
+export const {initializeAC, initializeProfile} = appSlice.actions
 
 //THUNKS
 export const initializeTC = createAsyncThunk('initializing-thunk',
     async (_, {dispatch}) => {
-        debugger
         try {
             const promise = dispatch(loginTC())
             Promise.all([promise]).then(() => {
@@ -53,4 +57,19 @@ export const initializeTC = createAsyncThunk('initializing-thunk',
         }
 
     })
+
+export const initializeProfileTC = createAsyncThunk('initialize-profile-thunk', async (userId, {dispatch}) => {
+    try {
+        debugger
+        dispatch(initializeProfile(false))
+        const initializeUserData = dispatch(setUserTC(userId))
+        const initializeUserStatus = dispatch(getStatusTC(userId))
+        Promise.all([initializeUserData, initializeUserStatus]).then(() => {
+            dispatch(initializeProfile(true))
+        })
+    } catch (error) {
+        console.log('there was an error during profile initialization: ', error)
+    }
+
+})
 

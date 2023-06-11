@@ -469,7 +469,7 @@ input:-webkit-autofill:active {
 }
 
 .login-page-right-part-signUp-label {
-    background-image: url("./components/Login/Back-1.png");
+    background-image: url("components/Auth/Back-1.png");
     background-repeat: no-repeat;
     background-size: 50%;
     background-position-x: 140px;
@@ -507,9 +507,9 @@ input:-webkit-autofill:active {
 }
 
 /*SIGN IN BLOCK*/
-.login-page-right-part-signIn-block {
+.signIn-container {
     transition: 2ms;
-    background-image: url("./components/Login/SignIn-logo.png");
+    background-image: url("components/Auth/SignIn-logo.png");
     background-size: 420px;
     background-repeat: no-repeat;
     background-position-x: 120px;
@@ -524,17 +524,17 @@ input:-webkit-autofill:active {
 
 }
 
-.login-page-welcome-label {
+.signIn-welcome-title {
     font-size: 1.8rem;
 }
 
-.login-page-signIn-label {
+.signIn-label {
     margin-top: 40px;
     font-size: 1.5rem;
     font-family: "Fira Sans";
 }
 
-.login-page-input-container {
+.signIn-inputs-container {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -543,13 +543,13 @@ input:-webkit-autofill:active {
     margin: 50px auto auto auto;
 }
 
-.login-page-input-error {
+.signIn-input-error {
     bottom: 45px;
-    color: yellow;
+    color: red;
     position: absolute;
 }
 
-.login-page-inputs, .login-page-captcha-input {
+.signIn-inputs, .signIn-captcha-input {
     width: 78%;
     text-align: center;
     font-family: Teko;
@@ -562,7 +562,7 @@ input:-webkit-autofill:active {
 }
 
 
-.login-page-captcha-block {
+.signIn-captcha-block {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -572,14 +572,14 @@ input:-webkit-autofill:active {
 
 }
 
-.login-page-rememberMe-container {
+.rememberMe-container {
     font-size: 1rem;
     margin: 30px auto auto auto;
     font-family: "Fira Sans";
     letter-spacing: 1px
 }
 
-.login-page-login-button-container {
+.signIn-btn-container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -599,31 +599,31 @@ input:-webkit-autofill:active {
 }
 
 
-.login-page-login-button {
+.signIn-btn, .signIn-btn-error {
     margin: 25px auto auto auto;
     background-color: #3f3c3c;
     color: rgba(255, 255, 255, 0.74);
-    border-radius: 5px;
+    border-radius: 10px;
     height: 40px;
     width: 250px;
     font-weight: 900;
     transition: 0.5s;
 }
 
-/*.login-page-login-button:disabled {*/
-/*    background-color: #ffffff;*/
-/*    color: #171515;*/
-/*    border: solid black 1px;*/
-/*}*/
 
-.login-page-login-button:hover {
+.signIn-btn-error {
+    border: solid 4px red;
+}
+
+
+.signIn-btn:hover, signIn-btn-error:hover {
     transition: 0.1s;
     color: #ffffff;
     border: solid #ee803d 4px;
     cursor: pointer;
 }
 
-.login-page-auth-error {
+.signIn-auth-error {
     top: 79px;
     color: red;
     position: absolute;
@@ -1149,12 +1149,19 @@ input:-webkit-autofill:active {
     word-wrap: break-word;
 }
 
+.user-data-block-uploaded {
+    background-color: rgba(0, 255, 247, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
+}
+
 .user-data-block-about {
     display: none;
 }
 
 .job-description-input {
     width: 100%;
+    height: max-content;
     word-wrap: break-word;
 }
 
@@ -1299,10 +1306,22 @@ input:-webkit-autofill:active {
     margin: 10px auto;
 }
 
-.profile-page-left-part-name {
+.profile-page-userName-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-page-userName, .profile-page-left-part-name-uploaded {
     margin: 10px 0 10px 0;
     letter-spacing: 2px;
     font-size: 1.5rem;
+}
+
+.profile-page-left-part-name-uploaded {
+    background-color: rgba(26, 255, 187, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
 }
 
 .profile-page-avatar {
@@ -1407,6 +1426,10 @@ input:-webkit-autofill:active {
     word-wrap: break-word;
 }
 
+.status-input {
+    background-color: white;
+}
+
 /*Overlay*/
 .overlay {
     position: fixed; /* Sit on top of the page content */
@@ -1499,7 +1522,7 @@ input:-webkit-autofill:active {
 }
 
 .edit-profile-data-part {
-    background: url("./components/Profile/ProfileCenterPart/EditProfile/bg.png") no-repeat;
+    background: url("components/EditProfile/BG.png") no-repeat;
     background-position-x: 170px;
     background-position-y: 110px;
     padding: 10px;
@@ -1604,7 +1627,21 @@ input:-webkit-autofill:active {
     font-weight: 2;
 }
 
-.edit-profile-page-submit-button {
+
+.submit-btn-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn-status {
+    position: absolute;
+    color: green;
+}
+
+.edit-profile-page-submit-btn {
     margin-top: 110px;
     background-color: #32c5d3;
     cursor: pointer;
@@ -1614,7 +1651,7 @@ input:-webkit-autofill:active {
     height: 35px;
 }
 
-.edit-profile-page-submit-button:active {
+.edit-profile-page-submit-btn :active {
     color: red;
 }
 
@@ -1705,12 +1742,12 @@ input:-webkit-autofill:active {
         width: auto;
     }
 
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         display: flex;
         position: relative;
         right: 20px;
         justify-content: center;
-        background-image: url("./components/Login/mobile-logo.png");
+        background-image: url("components/Auth/mobile-logo.png");
         background-size: 300px;
         background-position: 24px 55px;
 
@@ -1719,14 +1756,14 @@ input:-webkit-autofill:active {
 }
 
 @media only screen and (max-width: 392px) {
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         background-position: -10px 55px;
         background-size: 280px;
     }
 }
 
 @media only screen and (max-width: 392px) {
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         background-position: -10px 55px;
         background-size: 260px;
     }

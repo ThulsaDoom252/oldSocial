@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 
-const SignUpBlock = (props) => {
+const SignUpBlock = () => {
     return (
         <div className={"login-page-right-part-signUp-block"}>
             <h1 className={"login-page-right-part-signUp-label"}>No account?</h1>

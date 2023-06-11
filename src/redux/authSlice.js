@@ -1,9 +1,7 @@
 import {login, loginApi} from "../api/api";
 import {setAvatarTC} from "./profile/profileSlice";
-import {authDataFetchingAC} from "./commonSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-
-//ACTION CREATORS
+import {delay} from "./commonRefs";
 
 const authSlice = createSlice({
     name: 'auth-slice',
@@ -15,6 +13,7 @@ const authSlice = createSlice({
         error: false,
         captcha: null,
         errorMessage: null,
+        loginFetch: false,
     },
     reducers: {
         AuthAC(state, action) {
@@ -25,6 +24,9 @@ const authSlice = createSlice({
         },
         loggerAC(state, action) {
             state.isLogged = action.payload
+        },
+        toggleAuthFetch(state, action) {
+            state.loginFetch = action.payload
         },
         errorAC(state, action) {
             state.error = action.payload
@@ -39,10 +41,10 @@ const authSlice = createSlice({
 })
 
 export default authSlice.reducer
-export const {AuthAC, loggerAC, errorMessageAC, errorAC, captchaAc} = authSlice.actions
+export const {AuthAC, loggerAC, errorMessageAC, errorAC, captchaAc, toggleAuthFetch} = authSlice.actions
 
 export const loginTC = createAsyncThunk('login-thunk', async (_, {dispatch}) => {
-    await dispatch(authDataFetchingAC(true))
+    await dispatch(toggleAuthFetch(true))
     const response = await login.auth()
     const {id, email, login: userLogin} = response.data
     const {resultCode} = response
@@ -51,10 +53,10 @@ export const loginTC = createAsyncThunk('login-thunk', async (_, {dispatch}) => 
         dispatch(loggerAC(true))
         dispatch(errorAC(false))
         dispatch(setAvatarTC(id))
-        setTimeout(() => dispatch(authDataFetchingAC(false)), 500)
     } else {
         dispatch(loggerAC(false))
     }
+    dispatch(toggleAuthFetch(false))
 })
 
 export const getCaptchaTC = () => {
@@ -71,24 +73,22 @@ export const mainLoginTC = createAsyncThunk('main-login-thunk', async ({
                                                                            rememberMe,
                                                                            antiBotSymbols
                                                                        }, {dispatch}) => {
-    await dispatch(authDataFetchingAC(true))
+    await dispatch(toggleAuthFetch(true))
     const data = await loginApi.login(email, password, rememberMe, antiBotSymbols)
     if (data.resultCode === 0) {
         dispatch(loginTC())
         dispatch(errorAC(false))
         dispatch(errorMessageAC(null))
         dispatch(captchaAc(null))
-        dispatch(authDataFetchingAC(false))
     } else if (data.resultCode === 1) {
         dispatch(errorAC(true))
         dispatch(errorMessageAC(data.messages[0]))
-        dispatch(authDataFetchingAC(false))
     } else if (data.resultCode === 10) {
         dispatch(getCaptchaTC())
         dispatch(errorAC(true))
         dispatch(errorMessageAC(data.messages[0]))
-        dispatch(authDataFetchingAC(false))
     }
+    dispatch(toggleAuthFetch(false))
 })
 
 export const logOutTC = createAsyncThunk('logout-thunk', async (_, {dispatch}) => {

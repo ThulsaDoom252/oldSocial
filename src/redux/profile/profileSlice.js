@@ -9,25 +9,37 @@ import photo7 from "./photo-7.jpg"
 import photo8 from "./photo-8.png"
 import photo9 from "./photo-9.png"
 import photo10 from "./photo-10.png"
-
 import React from "react";
-import {avatarDataFetchingAC, personalDataFetchingAC, statusDataFetchingAC} from "../commonSlice";
+import {avatarDataFetchingAC, statusDataFetchingAC} from "../commonSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {
+    aboutData,
+    isLookingForAJobData, lookingForAJobDataInfo,
+    nameData,
+} from "./constants";
 
 const profileSlice = createSlice({
     name: 'profile',
     initialState: {
-        avatar: null,
-        avatarLarge: null,
+        currentUserAvatar: null,
+        aboutDataFetch: false,
+        nameDataFetch: false,
+        isLookingForAJobDataFetch: false,
+        jobDescriptionDataFetch: false,
         directEditMode: false,
-        profile: '',
+        fetchUserData: false,
+        userDataUploadStatus: null,
+        aboutDataUploadStatus: null,
+        nameDataUploadStatus: null,
+        isLookingForAJobDataUploadStatus: null,
+        jobDescriptionUploadStats: null,
+        profile: {},
         contacts: [],
         showOverlay: false,
         showOverlayPhotoViewport: false,
         selectedPhoto: null,
         selectedContact: null,
         selectedContactId: null,
-        currentUserAvatar: null,
         name: null,
         about: null,
         applicant: null,
@@ -61,13 +73,43 @@ const profileSlice = createSlice({
         notFoundAC(state, action) {
             state.notFound = action.payload
         },
+        toggleUserDataUploadStatus(state, action) {
+            state.userDataUploadStatus = action.payload
+        },
+        toggleAboutDataUploadStatus(state, action) {
+            state.aboutDataUploadStatus = action.payload
+        },
+        toggleNameDataUploadStatus(state, action) {
+            state.nameDataUploadStatus = action.payload
+        },
+        toggleJobDescriptionDataUploadStatus(state, action) {
+            state.jobDescriptionUploadStatus = action.payload
+        },
+        toggleIsLookingForAJobDataUploadStatus(state, action) {
+            state.isLookingForAJobDataUploadStatus = action.payload
+        },
         photoAC(state, action) {
             const {photo} = action.payload
             state.photos = photo
             state.profile = {...state.profile, photos: photo}
         },
+        toggleUserDataFetch(state, action) {
+            state.fetchUserData = action.payload
+        },
+        toggleAboutDataFetch(state, action) {
+            state.aboutDataFetch = action.payload
+        },
+        toggleNameDataFetch(state, action) {
+            state.nameDataFetch = action.payload
+        },
+        toggleIsLookingForAJobDataFetch(state, action) {
+            state.isLookingForAJobDataFetch = action.payload
+        },
+        toggleJobDescriptionDataFetch(state, action) {
+            state.jobDescriptionDataFetch = action.payload
+        },
         avatarAC(state, action) {
-            state.avatar = action.payload
+            state.currentUserAvatar = action.payload
         },
         setUserProfile(state, action) {
             const {profile} = action.payload
@@ -93,8 +135,6 @@ const profileSlice = createSlice({
                     ...contact,
                     value: selectedContact
                 } : {...contact})
-                console.log(state.contacts)
-                debugger
                 resolve()
             }).then(() => console.log('success'))
             return void 0
@@ -131,17 +171,26 @@ const profileSlice = createSlice({
 export default profileSlice.reducer
 export const {
     dataReceivedAC,
+    toggleAboutDataFetch,
+    toggleNameDataFetch,
+    toggleJobDescriptionDataFetch,
+    toggleIsLookingForAJobDataFetch,
+    toggleNameDataUploadStatus,
+    toggleAboutDataUploadStatus,
+    toggleJobDescriptionDataUploadStatus,
+    toggleIsLookingForAJobDataUploadStatus,
     showOverlayAC,
     notFoundAC,
+    toggleUserDataUploadStatus,
     avatarAC,
     changeCurrentContactDataAC,
     currentUserDataAC,
-    resultAC,
     setUserProfile,
     statusErrorAC,
     statusAC,
     changeContactValue,
-    photoAC
+    photoAC,
+    toggleUserDataFetch,
 } = profileSlice.actions
 
 //THUNKS
@@ -149,15 +198,17 @@ export const {
 
 export const setUserTC = createAsyncThunk('set-user-thunk', async (userId, {dispatch}) => {
     try {
-        debugger
-        await dispatch(personalDataFetchingAC(true))
+        dispatch(toggleUserDataFetch(true))
         const data = await apiCaller.setUsers(userId)
         dispatch(setUserProfile({profile: data}))
+        if (data.userId === userId) {
+            localStorage.setItem("userId", userId)
+        }
         dispatch(notFoundAC(false))
-        dispatch(personalDataFetchingAC(false))
     } catch (error) {
         dispatch(notFoundAC(true))
     }
+    dispatch(toggleUserDataFetch(false))
 })
 
 export const getStatusTC = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
@@ -217,9 +268,8 @@ export const updatePhotoTC = createAsyncThunk('update-photo-thunk', async (photo
 export const updateProfileTC = createAsyncThunk('update-profile-thunk',
     async ({
                about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
-               website, youtube, mainlink
+               website, youtube, mainlink, fetchData,
            }, {dispatch, getState}) => {
-        debugger
         const state = getState();
         const {userId, aboutMe, lookingForAJob, lookingForAJobDescription, fullName} = state.profilePage.profile
         const [facebookState, websiteState, vkState, twitterState, instagramState, youtubeState, githubState, mainlinkState] = state.profilePage.contacts
@@ -235,52 +285,87 @@ export const updateProfileTC = createAsyncThunk('update-profile-thunk',
         const mainLinkParam = mainlink ? mainlink : mainlinkState.value
         const youtubeParam = youtube ? youtube : youtubeState.value
         const twitterParam = twitter ? twitter : twitterState.value
+        switch (fetchData) {
+            case nameData:
+                dispatch(toggleNameDataFetch(true))
+                break;
+            case aboutData:
+                dispatch(toggleAboutDataFetch(true))
+                break
+            case isLookingForAJobData:
+                dispatch(toggleIsLookingForAJobDataFetch(true))
+                break;
+            case lookingForAJobDataInfo:
+                dispatch(toggleJobDescriptionDataFetch(true))
+                break;
+            default:
+                dispatch(toggleUserDataFetch(true))
+                break;
+        }
         const response = await profileApi.updateProfile(userId, aboutParam, isApplicantParam, descriptionParam,
             fullNameParam, githubParam, vkParam, facebookParam, instagramParam, twitterParam,
             websiteParam, youtubeParam, mainLinkParam)
-        debugger
         if (response.data.resultCode === 0) {
-            dispatch(resultAC('success'))
-            debugger
+            switch (fetchData) {
+                case aboutData:
+                    dispatch(toggleAboutDataUploadStatus(true))
+                    break;
+                case nameData:
+                    dispatch(toggleNameDataUploadStatus(true))
+                    break;
+                case isLookingForAJobData:
+                    dispatch(toggleIsLookingForAJobDataUploadStatus(true))
+                    break;
+                case lookingForAJobDataInfo:
+                    dispatch(toggleJobDescriptionDataUploadStatus(true))
+                    break;
+                default:
+                    dispatch(toggleUserDataUploadStatus(true))
+                    break;
+            }
+
             setTimeout(() => {
-                dispatch(resultAC(null))
-            }, 2000)
+                switch (fetchData) {
+                    case aboutData:
+                        dispatch(toggleAboutDataUploadStatus((null)))
+                        break;
+                    case nameData:
+                        dispatch(toggleNameDataUploadStatus(null))
+                        break;
+                    case isLookingForAJobData:
+                        dispatch(toggleIsLookingForAJobDataUploadStatus(null))
+                        break;
+                    case lookingForAJobDataInfo:
+                        dispatch(toggleJobDescriptionDataUploadStatus(null))
+                        break;
+                    default:
+                        dispatch(toggleUserDataUploadStatus(null))
+                        break;
+                }
+
+            }, 200)
         } else {
-            dispatch(resultAC('error'))
-            setTimeout(() => {
-                dispatch(resultAC(null))
-            }, 2000)
+            console.log('error')
+        }
+        switch (fetchData) {
+            case nameData:
+                dispatch(toggleNameDataFetch(false))
+                break;
+            case isLookingForAJobData:
+                dispatch(toggleIsLookingForAJobDataFetch(false))
+                break;
+            case lookingForAJobDataInfo:
+                dispatch(toggleJobDescriptionDataFetch(false))
+                break;
+            case aboutData:
+                dispatch(toggleAboutDataFetch(false))
+                break;
+            default:
+                dispatch(toggleUserDataFetch(false))
+                break;
         }
     }
 )
-
-
-// export const updateProfileTC = createAsyncThunk('update-profile-thunk',
-//     async ({
-//                userId, about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
-//                website, youtube, mainlink
-//            }, {dispatch, getState}) => {
-//         const state = getState();
-//         const profileState = state.profilePage;
-//         const profile = profileState.profile
-//         const contacts = profileState.contacts
-//         const response = await profileApi.updateProfile(userId, about, isApplicant, description,
-//             name, github, vk, facebook, instagram, twitter,
-//             website, youtube, mainlink)
-//         if (response.data.resultCode === 0) {
-//             dispatch(resultAC('success'))
-//             debugger
-//             setTimeout(() => {
-//                 dispatch(resultAC(null))
-//             }, 2000)
-//         } else {
-//             dispatch(resultAC('error'))
-//             setTimeout(() => {
-//                 dispatch(resultAC(null))
-//             }, 2000)
-//         }
-//     }
-// )
 
 
 

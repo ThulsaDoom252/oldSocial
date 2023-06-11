@@ -6,23 +6,30 @@ import ProfileWall from "./Wall/ProfileWall";
 import {NavLink} from "react-router-dom";
 import {nightModeStyles} from "../../../common/nightModeStyles";
 import emojiHidden from "./emojiHidden.png"
-import profileLoading from "../../common/profileLoading.gif"
 
-const ProfileCenterPart = ({profile, isCurrentUser, notFound, directEditMode, updateProfileTC, defaultAvatar, status, updateStatusTC, defaultPhotos, showOverlayAC, friends, nightMode, hideProfileWall, updatePhotoTC,
-                            showMobileVersion, fetchPersonalData, fetchStatusData, fetchAvatar}) => {
+const ProfileCenterPart = ({
+                               fullName,
+                               isCurrentUser,
+                               notFound,
+                               directEditMode,
+                               defaultAvatar,
+                               defaultPhotos,
+                               showOverlayAC,
+                               friends,
+                               nightMode,
+                               hideProfileWall,
+                               showMobileVersion,
+                               fetchPersonalData,
+                               profileAvatarProps,
+                               statusProps,
+                               profileDataProps,
+                               largePhoto,
+                           }) => {
 
-    const {fullName: name, photos} = profile
     if (notFound) {
         return <NotFound/>
-    } else if (!profile) {
-        return <div>
-            <div className={"profile-page-head-container"}><span className={"profile-page-userid"}>Loading...</span>
-            </div>
-            <div>
-                <img className="profile-page-loading" src={profileLoading}/>
-            </div>
-        </div>
     }
+
     return (
         <div style={nightMode ? nightModeStyles.centerBlock : null} className={"profile-page-center-container"}>
             <div className={"profile-page-center-bg"}>
@@ -30,12 +37,10 @@ const ProfileCenterPart = ({profile, isCurrentUser, notFound, directEditMode, up
                     Profile</NavLink>
             </div>
             <div className={"profile-page-center-userInfo-container"}>
-                <ProfileAvatarBlock {...[profile,
-                    isCurrentUser, directEditMode,
-                    updateProfileTC, defaultAvatar,
-                    status, updateStatusTC,
-                    showOverlayAC, updatePhotoTC, fetchPersonalData, fetchStatusData, fetchAvatar]}/>
-                <ProfileData {...[profile, isCurrentUser, updateProfileTC, directEditMode, fetchPersonalData]}/>
+                <ProfileAvatarBlock {...{
+                    isCurrentUser, directEditMode, defaultAvatar, profileAvatarProps, statusProps,
+                }}/>
+                <ProfileData {...{isCurrentUser, fetchPersonalData, profileDataProps}}/>
             </div>
             {isCurrentUser && <div style={{"display": showMobileVersion && "block"}} className={"mobile-friends-block"}>
                 <div className={"center-friends-block"}>
@@ -55,7 +60,7 @@ const ProfileCenterPart = ({profile, isCurrentUser, notFound, directEditMode, up
                 </div>
                 <NavLink to={"/gallery"} className={"center-gallery-button"}>To gallery</NavLink>
             </div>}
-            {!hideProfileWall ? <ProfileWall {...[name, photos, defaultAvatar]}/> :
+            {!hideProfileWall ? <ProfileWall {...{fullName, largePhoto, defaultAvatar}}/> :
                 <div className={"wall-plug"}>
                     <span className={"wall-plug-label"}>The wall is hidden</span>
                     <img className={"wall-plug-img"} src={emojiHidden} alt="wallIsHidden"/>

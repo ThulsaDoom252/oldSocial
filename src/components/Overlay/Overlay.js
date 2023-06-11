@@ -7,7 +7,7 @@ import {
     showOverlayAC,
     updateProfileTC
 } from "../../redux/profile/profileSlice";
-import {AiOutlineCheck, AiOutlineClose} from "react-icons/all";
+import {AiOutlineCheck, AiOutlineClose} from "react-icons/ai";
 
 const Overlay = ({dispatch}) => {
     const staticPhotos = useSelector(state => state.profilePage.defaultPhotos)

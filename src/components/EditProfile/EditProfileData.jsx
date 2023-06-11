@@ -1,81 +1,20 @@
 import React from 'react';
-import {useFormik} from 'formik'
-import * as Yup from "yup";
-import {connect} from "react-redux";
-import {setUserTC, updatePhotoTC, updateProfileTC} from "../../../../redux/profile/profileSlice";
-import authHoc from "../../../HOC/authHoc";
+import {dataUploaded} from "../../redux/profile/constants";
 
 const EditProfileData = ({
+                             handleSubmit,
+                             largePhoto,
+                             uploadPhoto,
                              email,
-                             profile,
-                             contacts,
-                             photos,
-                             updatePhotoTC,
-                             updateProfileTC,
+                             handleAvatarClick,
+                             handleChange,
+                             values,
+                             errors,
+                             contactsData,
+                             hiddenFileInput,
+                             fetchUserData,
+                             userDataUploadStatus,
                          }) => {
-
-
-    if (!profile) return <div>Loading...</div>
-
-    const {fullName: name, aboutMe: about, lookingForAJob: applicant, lookingForAJobDescription: description} = profile
-    const [facebook, website, vk, twitter, instagram, youtube, github, mainLink] = contacts
-    const {large: largePhoto} = photos
-
-    const hiddenFileInput = React.useRef(null);
-
-    const uploadPhoto = (e) => {
-        updatePhotoTC(e.target.files[0])
-    }
-    const handleClick = event => hiddenFileInput.current.click()
-
-    const {handleSubmit, handleChange, values, errors} = useFormik({
-        initialValues: {
-            name, about, applicant, description,
-            website: website.value,
-            vk: vk.value,
-            facebook: facebook.value,
-            twitter: twitter.value,
-            instagram: instagram.value,
-            github: github.value,
-            mainlink: mainLink.value,
-            youtube: youtube.value,
-
-        },
-        validationSchema: Yup.object({
-            name: Yup.string().min(3, 'Name must be longer than 3 characters').required(),
-            about: Yup.string().min(3, 'Must contain more than 3 characters!').required(),
-            description: Yup.string().min(3, 'Description must contain more than 3 characters!').nullable().required(),
-
-        }),
-        onSubmit: ({
-                       name,
-                       about,
-                       isApplicant,
-                       description,
-                       website,
-                       vk,
-                       facebook,
-                       twitter,
-                       instagram,
-                       youtube,
-                       github,
-                       mainlink
-                   }) => {
-            updateProfileTC({
-                about, isApplicant, description, name, github, vk, facebook, instagram,
-                twitter, website, youtube, mainlink
-            })
-
-        }
-    })
-
-    const contactsData = contacts.map(contact => ({
-        ...contact,
-        value: values[contact.id],
-        error: errors[contact.id],
-        change: handleChange
-    }));
-
     return (
         <form onSubmit={handleSubmit}>
             <div className={"edit-profile-page-container"}>
@@ -85,7 +24,7 @@ const EditProfileData = ({
                     <input ref={hiddenFileInput}
                            hidden={true} type={"file"}
                            onChange={uploadPhoto}/>
-                    <button type="button" className={"upload-avatar-button"} onClick={handleClick}>Upload photo
+                    <button type="button" className={"upload-avatar-button"} onClick={handleAvatarClick}>Upload photo
                     </button>
                     <p className={"edit-profile-email"}>{email}</p>
                 </div>
@@ -96,7 +35,8 @@ const EditProfileData = ({
                         <input ref={hiddenFileInput}
                                hidden={true} type={"file"}
                                onChange={uploadPhoto}/>
-                        <button type="button" className={"upload-avatar-button"} onClick={handleClick}>Upload photo
+                        <button type="button" className={"upload-avatar-button"} onClick={handleAvatarClick}>Upload
+                            photo
                         </button>
                     </div>
                     <div className={"data-first-block"}>
@@ -145,12 +85,15 @@ const EditProfileData = ({
                                                                         placeholder={`${contact.id} url`}/>)}
                                 </div>
                             </div>
-
-
                         </div>
-                        <button className={"edit-profile-page-submit-button"} type={"submit"}
-                                onSubmit={handleSubmit}>Submit...
-                        </button>
+                        <div className={"submit-btn-container"}>
+                            {userDataUploadStatus === dataUploaded && <p className={"submit-btn-status"}>Data loaded</p>}
+                            <button className={"edit-profile-page-submit-btn"} type={"submit"}
+                                    onSubmit={handleSubmit}>{fetchUserData ?
+                                <i className="fa fa-spinner fa-spin"/> : "Submit"}
+                            </button>
+                        </div>
+
                     </div>
                 </div>
                 <div className={"edit-profile-contacts-part"}>
@@ -174,18 +117,6 @@ const EditProfileData = ({
             </div>
         </form>
     );
-}
+};
 
-const mapStateToProps = (state) => {
-    return {
-        email: state.auth.email,
-        contacts: state.profilePage.contacts,
-        photos: state.profilePage.photos,
-        auth: state.auth.isLogged,
-        profile: state.profilePage.profile,
-    }
-}
-
-export default connect(mapStateToProps, {
-    setUserTC, updateProfileTC, updatePhotoTC
-})(authHoc(EditProfileData));
+export default EditProfileData;

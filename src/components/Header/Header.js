@@ -1,23 +1,21 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
-import {
-    BiMessageSquareDetail,
-    FaUserFriends,
-    ImUsers,
-    IoSettingsOutline,
-    RiLogoutBoxRLine, TfiGallery,
-    TfiUser
-} from "react-icons/all";
+import {BiMessageSquareDetail} from "react-icons/bi"
+import {FaUserFriends} from "react-icons/fa"
+import {ImUsers} from "react-icons/im"
+import {IoSettingsOutline} from "react-icons/io5"
+import {RiLogoutBoxRLine} from "react-icons/ri"
+import {TfiGallery, TfiUser} from "react-icons/tfi"
 import {fetchUiHeader} from "../../redux/commonSlice";
 
-const Header = ({userId, handleLogOut, userName, isLogged, avatar, fetching}) => {
+const Header = ({userId, handleLogOut, userName, isLogged, currentUserAvatar, fetching}) => {
     const navButtonsClass = "header-navbar-button"
     const navButtonsActiveClass = "header-navbar-button-active"
     return (
         <div className={'box'} hidden={!isLogged}>
             <header className={"header-container"}>
-                {!fetching ? <div className={"header-current-user-block"}> {avatar &&
-                    <img className={"header-current-user-avatar"} src={avatar}
+                {!fetching ? <div className={"header-current-user-block"}> {currentUserAvatar &&
+                    <img className={"header-current-user-avatar"} src={currentUserAvatar}
                          alt={"user-avatar"}/>}
                     <NavLink to={`/profile/` + userId}
                              className={"header-current-user-name"}>{userName}</NavLink>

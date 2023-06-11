@@ -1,23 +1,22 @@
 import React, {useEffect} from "react";
 import './App.css';
-import Profile from "./components/Profile/ProfileContainer";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Settings from "./components/Settings/Settings";
 import News from "./components/News";
-import Login from "./components/Login/Login";
+import Login from "./components/Auth/Login";
 import {useDispatch, useSelector} from "react-redux";
 import Initialize from "./components/Initialize";
 import {initializeTC} from "./redux/appSlice";
 import NotFound from "./components/common/NotFound";
 import Users from "./components/Users/Users";
-import Messages from "./components/Messages/Messages";
+import DialogsContainer from "./components/Messages/DialoigsContainer";
 import Overlay from "./components/Overlay/Overlay";
 import Friends from "./components/Friends";
-import EditProfileData from "./components/Profile/ProfileCenterPart/EditProfile/EditProfileData";
 import Photos from "./components/Gallery";
 import {nightModeStyles} from "./common/nightModeStyles";
-import {showOverlayAC} from "./redux/profile/profileSlice";
 import HeaderContainer from "./components/Header/HeaderContainer";
+import ProfileRelay from "./components/Profile/ProfileRelay";
+import EditProfileDataRelay from "./components/EditProfile/EditProfileDataRelay";
 
 const App = () => {
     const dispatch = useDispatch()
@@ -42,11 +41,7 @@ const App = () => {
     }, [])
 
     if (!initialized) {
-        return (
-            <div className={"container"}>
-                <Initialize/>
-            </div>
-        )
+        return <Initialize/>
 
     } else {
         return (
@@ -58,16 +53,13 @@ const App = () => {
                                  className={auth && "section-content"}>
                             <HeaderContainer {...{dispatch}}/>
                             <Routes>
-                                <Route path={"/profile/:userId"} element={<Profile
-                                    nightMode={nightMode}
-                                    overlay={overlayVisible}
-                                    showOverlay={showOverlayAC}/>}/>
-                                <Route path="/messages" element={<Messages nightMode={nightMode}/>}/>
+                                <Route path={"/profile/:userId"} element={<ProfileRelay/>}/>
+                                <Route path="/messages" element={<DialogsContainer nightMode={nightMode}/>}/>
                                 <Route path="/gallery" element={<Photos nightMode={nightMode}/>}/>
                                 <Route path="" element={<Login/>}/>
                                 <Route path="/users" element={<Users nightMode={nightMode}/>}/>
                                 <Route path="/news" element={<News/>}/>
-                                <Route path="/edit" element={<EditProfileData/>}/>
+                                <Route path="/edit" element={<EditProfileDataRelay/>}/>
                                 <Route path="/settings" element={<Settings nightMode={nightMode}/>}/>
                                 <Route path={"/friends"} element={<Friends nightMode={nightMode}/>}/>
                                 <Route path="*" element={<NotFound/>}/>

@@ -1,11 +1,14 @@
 import React from 'react';
 import initializing from "./common/initializing2.gif"
 
-const Initialize = (props) => {
+const Initialize = () => {
     return (
-        <div className={"initializing-image"}>
-            <img src={initializing} alt="app is initializing"/>
+        <div className={'container'}>
+            <div className={"initializing-image"}>
+                <img src={initializing} alt="app is initializing"/>
+            </div>
         </div>
+
 
     );
 }

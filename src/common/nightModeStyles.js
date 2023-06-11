@@ -20,7 +20,7 @@ export const nightModeStyles = {
         color: "white"
     },
     settings : {
-        background: "url(\"./components/Settings/settings-nightMode-bg.png\") linear-gradient(400deg, #c0c0c0, #e0dddd, #C0C0C0, #b0acac)",
+        background: "url(\"./components/Settings/settings-nightMode-BG.png\") linear-gradient(400deg, #c0c0c0, #e0dddd, #C0C0C0, #b0acac)",
     }
 }
 

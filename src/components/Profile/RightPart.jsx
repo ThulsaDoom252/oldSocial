@@ -1,9 +1,8 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
 import {nightModeStyles} from "../../common/nightModeStyles";
-import {fetchUiBar} from "../../redux/commonSlice";
 
-const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFollowFriend, nightMode, fetchFriends}) => {
+const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFollowFriend, nightMode}) => {
 
     const handleUnfollow = (friendId, index) => unFollowFriend({friendId, index})
     return (
@@ -19,7 +18,7 @@ const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFoll
                          src={photo} alt="default-photo"/>
                 </span>)}
             </div>
-            {!fetchFriends ? <div style={nightMode ? nightModeStyles.profileRightPart : null}
+            <div style={nightMode ? nightModeStyles.profileRightPart : null}
                                   className={"profile-page-right-part-friends-block"}>
                 <p>Friends({friends.length})</p>
                 <p>{friends.length === 0 && "You have no friends yet.."}</p>
@@ -33,8 +32,7 @@ const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFoll
                     </button>
                 </div>)}
                 <p hidden={friends.length <= 5}><NavLink to={"/friends"}>Show all friends...</NavLink></p>
-            </div> : <div className="profile-page-right-part-friends-block"><p>Loading friends..</p><p>{fetchUiBar}</p>
-            </div>}
+            </div>
         </div>
     );
 }

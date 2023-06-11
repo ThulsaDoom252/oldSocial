@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {
     AiOutlineDislike, AiOutlineLike, AiOutlineShareAlt,
-    FaRegComment,
-} from "react-icons/all";
+} from "react-icons/ai";
+
+import {FaRegComment} from "react-icons/fa"
 
 const ReactionsBar = (props) => {
     const [likes, likesNumber] = useState(0)

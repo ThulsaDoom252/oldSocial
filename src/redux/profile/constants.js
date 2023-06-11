@@ -1,0 +1,11 @@
+export const aboutData = "aboutData"
+export const nameData = "nameData"
+export const isLookingForAJobData = "isLookingForAJobData"
+export const lookingForAJobDataInfo = "lookingForAJobDataInfo"
+export const allData = "allData"
+export const dataUploaded = "dataUploaded"
+export const aboutDataUploaded = "aboutDataUploaded"
+export const nameDataUploaded = "nameDataUploaded"
+export const isLookingForAJobDataUploaded = "isLookingForAJobDataUploaded"
+export const lookingForAJobDescriptionDataUploaded = "isLookingFroAJobDescriptionDataUploaded"
+
