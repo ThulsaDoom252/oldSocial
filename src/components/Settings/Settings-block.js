@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Switch from "./Switch";
 
-function SettingsBlock(props) {
-    const {label, option, setOption, disabled, className} = props
-
+const SettingsBlock = ({label, option, setOption, disabled, className}) => {
     return (
         <div className={"settings-block"}>
             <div className={`sbl ${className}`}>

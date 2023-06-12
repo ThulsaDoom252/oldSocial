@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import ProfileCenterPart from "./ProfileCenterPart/ProfileCenterPart";
 import {connect, useSelector} from "react-redux";
 import {
-    setCurrentUserDataTC,
     getStatusTC,
     setUserTC, showOverlayAC, updateProfileTC, updateStatusTC, updatePhotoTC,
 } from "../../redux/profile/profileSlice";
@@ -12,7 +11,7 @@ import {getFriendsTC, unfollowFriendTC} from "../../redux/userSlice";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {getContactIcon} from "../../redux/profile/contactsRef";
-import {aboutData} from "../../redux/profile/constants";
+import {aboutData, isLookingForAJobData} from "../../redux/profile/constants";
 
 const ProfileContainer = (props) => {
     const {
@@ -41,7 +40,7 @@ const ProfileContainer = (props) => {
     const userId = useSelector(state => state.auth.id)
     const email = useSelector(state => state.auth.email)
     const profile = useSelector(state => state.profilePage.profile)
-    const defaultPhotos = useSelector(state => state.profilePage.defaultPhotos)
+    const userPhotos = useSelector(state => state.profilePage.userPhotos)
     const status = useSelector(state => state.profilePage.status)
     const notFound = useSelector(state => state.profilePage.notFound)
     const defaultAvatar = useSelector(state => state.dialogsPage.defaultAvatar)
@@ -52,7 +51,8 @@ const ProfileContainer = (props) => {
     const hideEmail = useSelector(state => state.settings.hideEmail)
     const nightMode = useSelector(state => state.settings.nightMode)
     const fetchPersonalData = useSelector(state => state.common.fetchPersonalData)
-    const fetchStatusData = useSelector(state => state.common.fetchStatusData)
+    const fetchStatusData = useSelector(state => state.profilePage.fetchStatusData)
+    const statusDataUploadStatus = useSelector(state => state.profilePage.statusDataUploadStatus)
     const profileInitialized = useSelector(state => state.app.profileInitialized)
     const contactsArray = useSelector(state => state.profilePage.contacts)
 
@@ -136,7 +136,7 @@ const ProfileContainer = (props) => {
         }
     }
     const statusProps = [status, statusEditMode, statusValue, statusLengthError, handleChangeStatus,
-        toggleStatusEdit, pointerCursor, fetchStatusData]
+        toggleStatusEdit, pointerCursor, fetchStatusData, statusDataUploadStatus]
 
     ////////// Avatar & contacts block
     const hiddenFileInput = React.useRef(null);
@@ -216,21 +216,18 @@ const ProfileContainer = (props) => {
 
     /////////////Profile Data
     const {lookingForAJob: applicant, lookingForAJobDescription: description} = profile
-    const [applicantHook, setApplicantHook] = useState(null)
+    const {lookingForAJob} = profile
     const [descriptionEditMode, setDescriptionEditMode] = useState(false)
     const [centerProfileAboutEditMode, setCenterProfileAboutEditMode] = useState(false)
     const profileFormik = useFormik({
         initialValues: {
+            lookingForAJob,
             applicantDescription: description,
             about: aboutMe,
         },
     })
 
     const {values: dataValues} = profileFormik
-
-    useEffect(() => {
-        setApplicantHook(!!applicant)
-    }, [applicant, description, aboutMe])
 
     const toggleProfileDataEditMode = (editMode, setEditMode, fetchData) => {
         if (isCurrentUser && !editMode && directEditMode) {
@@ -241,26 +238,21 @@ const ProfileContainer = (props) => {
         }
     }
 
-    const handleUpdateProfileData = (fetchData, applicant = applicantHook) => {
+    const handleChangeIsLookingForAJobInfo = (isApplicant) => {
+        profileFormik.setFieldValue("lookingForAJob", isApplicant)
+        handleUpdateProfileData(isLookingForAJobData, isApplicant)
+    }
+
+    const handleUpdateProfileData = (fetchData, isApplicant = dataValues.lookingForAJob) => {
         updateProfileTC({
             about: dataValues.about,
-            isApplicant: applicant,
+            isApplicant,
             description: dataValues.applicantDescription,
             name: fullName,
             fetchData,
         })
     }
 
-    const applicantRelay = () => applicantHook ? setApplicantHook(false) : setApplicantHook(true)
-
-    const handleApplicantUpdate = (fetchData) => {
-        applicantRelay()
-        if (!applicantHook) {
-            handleUpdateProfileData(fetchData, true)
-        } else {
-            handleUpdateProfileData(false)
-        }
-    }
 
     const directEditFunc = isCurrentUser && directEditMode
 
@@ -272,11 +264,10 @@ const ProfileContainer = (props) => {
 
     const profileDataProps = [profileFormik.handleChange, profileFormik.values, profileFormik.errors, toggleProfileDataEditMode,
         descriptionEditMode, setDescriptionEditMode, centerProfileAboutEditMode, setCenterProfileAboutEditMode,
-        directEditFunc, jobDescriptionStyle, applicantHook, handleApplicantUpdate, pointerCursor, aboutBlockStyle,
+        directEditFunc, jobDescriptionStyle, pointerCursor, aboutBlockStyle,
         isLookingForAJobDataFetch, isLookingForAJobDataUploadStatus, jobDescriptionDataFetch, jobDescriptionDataUploadStatus,
-
+        handleChangeIsLookingForAJobInfo
     ]
-
 
     return (
         <div className={"profile-main-container"}>
@@ -284,26 +275,24 @@ const ProfileContainer = (props) => {
                 <ProfileLeftPart {...{profileLeftPartProps, commonProps}}/>}
             <ProfileCenterPart  {...{
                 fullName, largePhoto, isCurrentUser, notFound, directEditMode, defaultAvatar,
-                defaultPhotos, showOverlayAC, friends, nightMode, hideProfileWall,
+                userPhotos, showOverlayAC, friends, nightMode, hideProfileWall,
                 updatePhotoTC, showMobileVersion, fetchPersonalData, profileAvatarProps, statusProps,
                 profileDataProps,
             }}/>
             {!showMobileVersion &&
                 <ProfileRightPart {...{
-                    defaultAvatar, friends, defaultPhotos, showOverlayAC,
+                    defaultAvatar, friends, userPhotos, showOverlayAC,
                     unfollowFriendTC, nightMode,
                 }}/>}
         </div>
     )
 }
 
-
 export default connect(
     null,
     {
         setUserTC,
         getStatusTC,
-        setCurrentUserDataTC,
         showOverlayAC,
         getFriendsTC,
         updateProfileTC,

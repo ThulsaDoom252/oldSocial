@@ -12,10 +12,9 @@ import {
 } from "../../redux/settingsSlice";
 import {nightModeStyles} from "../../common/nightModeStyles";
 
-const Settings = ({
+const SettingsRES = ({
                       nightMode,
                       directEditMode,
-                      hideNonFunctionalPages,
                       hideProfileWall,
                       showMobileVersion,
                       hideEmail,
@@ -63,7 +62,7 @@ const Settings = ({
 
 }
 
-let settingsState = (state) => {
+const settingsState = (state) => {
     return {
         auth: state.auth.isLogged,
         nightMode: state.settings.nightMode,
@@ -80,4 +79,4 @@ export default compose(connect(settingsState, {
     toggleWallAC,
     toggleMobileVersionAC,
     toggleEmailAC
-}), authHoc)(Settings)
+}), authHoc)(SettingsRES)

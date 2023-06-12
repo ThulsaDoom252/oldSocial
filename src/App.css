@@ -1421,6 +1421,12 @@ input:-webkit-autofill:active {
     word-wrap: break-word;
 }
 
+.status-container-data-uploaded {
+    background-color: rgba(0, 255, 247, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
+}
+
 .status {
     width: 95%;
     word-wrap: break-word;

@@ -1,20 +1,21 @@
 import React from 'react';
 import {fetchUiSpin} from "../../../redux/commonSlice";
-import {isLookingForAJobData, lookingForAJobDataInfo} from "../../../redux/profile/constants";
+import {lookingForAJobDataInfo} from "../../../redux/profile/constants";
 
 const ProfileData = ({isCurrentUser, fetchPersonalData, profileDataProps}) => {
     const [handleChange, values, errors, toggleProfileEditMode,
         descriptionEditMode, setDescriptionEditMode, centerProfileAboutEditMode, setCenterProfileAboutEditMode,
-        directEditFunc, jobDescriptionStyle, applicantHook, handleApplicantUpdate, pointerCursor,
+        directEditFunc, jobDescriptionStyle, pointerCursor,
         aboutBlockStyle, isLookingForAJobDataFetch, isLookingForAJobDataUploadStatus, jobDescriptionDataFetch, jobDescriptionDataUploadStatus,
+       handleChangeIsLookingForAJobInfo
     ] = profileDataProps
+
     return (
         <div>
             <div style={pointerCursor}
                  className={`user-data-block ${isLookingForAJobDataUploadStatus && "user-data-block-uploaded"}`}
-                 onClick={() => directEditFunc && handleApplicantUpdate(isLookingForAJobData)}
-            >
-                {isLookingForAJobDataFetch ? fetchUiSpin : applicantHook && isCurrentUser ? "You are looking for a job" : applicantHook && !isCurrentUser ? "Looking for a job" : "Not looking for a job"}
+                 onClick={() => directEditFunc && handleChangeIsLookingForAJobInfo(!values.lookingForAJob)}>
+                {isLookingForAJobDataFetch ? fetchUiSpin : values.lookingForAJob && isCurrentUser ? "You are looking for a job" : values.lookingForAJob && !isCurrentUser ? "Looking for a job" : "Not looking for a job"}
             </div>
             <div
                 style={jobDescriptionStyle}

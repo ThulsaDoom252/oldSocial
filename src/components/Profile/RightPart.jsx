@@ -2,8 +2,7 @@ import React from 'react';
 import {NavLink} from "react-router-dom";
 import {nightModeStyles} from "../../common/nightModeStyles";
 
-const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFollowFriend, nightMode}) => {
-
+const RightPart = ({defaultAvatar, friends, userPhotos, showOverlayAC, unFollowFriend, nightMode}) => {
     const handleUnfollow = (friendId, index) => unFollowFriend({friendId, index})
     return (
         <div className={"profile-page-right-part-container"}>
@@ -11,7 +10,7 @@ const RightPart = ({defaultAvatar, friends, defaultPhotos, showOverlayAC, unFoll
                  className={"profile-page-right-part-photos-block"}>
                 <p className={"profile-page-right-part-photos-block-label"}><NavLink to={"/gallery"}>Latest
                     photos</NavLink></p>
-                {defaultPhotos.map((photo, index) => <span key={index}>
+                {userPhotos.map((photo, index) => <span key={index}>
                     <img onClick={() => showOverlayAC({toggleRelay: true, toggleViewPort: true, index})}
                          key={index}
                          className={"profile-page-right-part-photo"}

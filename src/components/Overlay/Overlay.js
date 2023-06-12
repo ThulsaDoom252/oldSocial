@@ -10,7 +10,7 @@ import {
 import {AiOutlineCheck, AiOutlineClose} from "react-icons/ai";
 
 const Overlay = ({dispatch}) => {
-    const staticPhotos = useSelector(state => state.profilePage.defaultPhotos)
+    const userPhotos = useSelector(state => state.profilePage.userPhotos)
     const selectedPhoto = useSelector(state => state.profilePage.selectedPhoto)
     const selectedContact = useSelector(state => state.profilePage.selectedContact)
     const selectedContactId = useSelector(state => state.profilePage.selectedContactId)
@@ -32,7 +32,7 @@ const Overlay = ({dispatch}) => {
     return (
         <div className={"overlay"} onClick={() => photoViewPort && dispatch(showOverlayAC(false))}>
             <div hidden={!photoViewPort} className={"profile-photo-viewPort"}>
-                <img className={"currently-viewing-photo"} src={staticPhotos[selectedPhoto]} alt="photo"/>
+                <img className={"currently-viewing-photo"} src={userPhotos[selectedPhoto]} alt="photo"/>
             </div>
             <form action="" hidden={photoViewPort}>
                 <div className={"profile-contact-viewport"}>

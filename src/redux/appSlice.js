@@ -1,6 +1,6 @@
 import {loginTC} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {getStatusTC, setCurrentUserDataTC, setUserTC} from "./profile/profileSlice";
+import {getStatusTC,  setUserTC} from "./profile/profileSlice";
 
 const appSlice = createSlice({
     name: 'app-slice',

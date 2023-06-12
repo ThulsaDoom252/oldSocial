@@ -13,7 +13,7 @@ const ProfileCenterPart = ({
                                notFound,
                                directEditMode,
                                defaultAvatar,
-                               defaultPhotos,
+                               userPhotos,
                                showOverlayAC,
                                friends,
                                nightMode,
@@ -52,7 +52,7 @@ const ProfileCenterPart = ({
             </div>}
             {isCurrentUser && <div style={{"display": showMobileVersion && "block"}} className={"mobile-gallery-block"}>
                 <div className={"photos-block"}>
-                    {defaultPhotos.map((photo, index) => <div className={"center-gallery-photo-block"}>{index < 4 &&
+                    {userPhotos.map((photo, index) => <div className={"center-gallery-photo-block"}>{index < 4 &&
                         <img className={"center-gallery-photo"}
                              onClick={() => showOverlayAC({toggleRelay: true, toggleViewPort: true, index})}
                              src={photo}

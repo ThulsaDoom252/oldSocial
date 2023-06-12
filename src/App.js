@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import './App.css';
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Settings from "./components/Settings/Settings";
 import News from "./components/News";
 import Login from "./components/Auth/Login";
 import {useDispatch, useSelector} from "react-redux";
@@ -17,6 +16,7 @@ import {nightModeStyles} from "./common/nightModeStyles";
 import HeaderContainer from "./components/Header/HeaderContainer";
 import ProfileRelay from "./components/Profile/ProfileRelay";
 import EditProfileDataRelay from "./components/EditProfile/EditProfileDataRelay";
+import SettingsContainer from "./components/Settings/SettignsContainer";
 
 const App = () => {
     const dispatch = useDispatch()
@@ -60,7 +60,7 @@ const App = () => {
                                 <Route path="/users" element={<Users nightMode={nightMode}/>}/>
                                 <Route path="/news" element={<News/>}/>
                                 <Route path="/edit" element={<EditProfileDataRelay/>}/>
-                                <Route path="/settings" element={<Settings nightMode={nightMode}/>}/>
+                                <Route path="/settings" element={<SettingsContainer nightMode={nightMode}/>}/>
                                 <Route path={"/friends"} element={<Friends nightMode={nightMode}/>}/>
                                 <Route path="*" element={<NotFound/>}/>
                                 <Route path="/profile/*" element={<NotFound/>}/>
