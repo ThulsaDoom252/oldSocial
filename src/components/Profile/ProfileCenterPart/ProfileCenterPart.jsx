@@ -5,7 +5,6 @@ import ProfileAvatarBlock from "./profileAvatarBlock";
 import ProfileWall from "./Wall/ProfileWall";
 import {NavLink} from "react-router-dom";
 import {nightModeStyles} from "../../../common/nightModeStyles";
-import emojiHidden from "./emojiHidden.png"
 
 const ProfileCenterPart = ({
                                fullName,
@@ -17,7 +16,6 @@ const ProfileCenterPart = ({
                                showOverlayAC,
                                friends,
                                nightMode,
-                               hideProfileWall,
                                showMobileVersion,
                                fetchPersonalData,
                                profileAvatarProps,
@@ -60,12 +58,7 @@ const ProfileCenterPart = ({
                 </div>
                 <NavLink to={"/gallery"} className={"center-gallery-button"}>To gallery</NavLink>
             </div>}
-            {!hideProfileWall ? <ProfileWall {...{fullName, largePhoto, defaultAvatar}}/> :
-                <div className={"wall-plug"}>
-                    <span className={"wall-plug-label"}>The wall is hidden</span>
-                    <img className={"wall-plug-img"} src={emojiHidden} alt="wallIsHidden"/>
-                </div>}
-
+           <ProfileWall {...{fullName, largePhoto, defaultAvatar}}/>
         </div>
 
     )

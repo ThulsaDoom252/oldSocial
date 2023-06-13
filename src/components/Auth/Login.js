@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {connect} from "react-redux";
 import {Navigate} from "react-router-dom";
 import SignUpBlock from "./SignUpBlock";
-import SignInBlock from "./SignInContainer";
 import SignInContainer from "./SignInContainer";
 
 const LoginPage = ({id: currentUser, auth: loggedIn}) => {

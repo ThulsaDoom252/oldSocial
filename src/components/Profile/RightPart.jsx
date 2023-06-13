@@ -2,8 +2,8 @@ import React from 'react';
 import {NavLink} from "react-router-dom";
 import {nightModeStyles} from "../../common/nightModeStyles";
 
-const RightPart = ({defaultAvatar, friends, userPhotos, showOverlayAC, unFollowFriend, nightMode}) => {
-    const handleUnfollow = (friendId, index) => unFollowFriend({friendId, index})
+const RightPart = ({defaultAvatar, friends, userPhotos, nightMode, handleSelectedPhoto, handleUnfollowFriend}) => {
+
     return (
         <div className={"profile-page-right-part-container"}>
             <div style={nightMode ? nightModeStyles.profileRightPart : null}
@@ -11,14 +11,14 @@ const RightPart = ({defaultAvatar, friends, userPhotos, showOverlayAC, unFollowF
                 <p className={"profile-page-right-part-photos-block-label"}><NavLink to={"/gallery"}>Latest
                     photos</NavLink></p>
                 {userPhotos.map((photo, index) => <span key={index}>
-                    <img onClick={() => showOverlayAC({toggleRelay: true, toggleViewPort: true, index})}
+                    <img onClick={() => handleSelectedPhoto(index)}
                          key={index}
                          className={"profile-page-right-part-photo"}
-                         src={photo} alt="default-photo"/>
+                         src={require(`../../redux/profile/${photo}`)} alt="default-photo"/>
                 </span>)}
             </div>
             <div style={nightMode ? nightModeStyles.profileRightPart : null}
-                                  className={"profile-page-right-part-friends-block"}>
+                 className={"profile-page-right-part-friends-block"}>
                 <p>Friends({friends.length})</p>
                 <p>{friends.length === 0 && "You have no friends yet.."}</p>
                 {friends.map((friend, index) => index < 5 && <div className={"profile-page-right-friend-block"}>
@@ -27,7 +27,7 @@ const RightPart = ({defaultAvatar, friends, userPhotos, showOverlayAC, unFollowF
                              src={friend.photos.small ? friend.photos.small : defaultAvatar} alt="friend-photo"/>
                     </NavLink>
                     <button key={index} className={"profile-page-right-unfollow-button"}
-                            onClick={() => handleUnfollow(friend.id, index)}>Unfollow
+                            onClick={() => handleUnfollowFriend(friend.id, index)}>Unfollow
                     </button>
                 </div>)}
                 <p hidden={friends.length <= 5}><NavLink to={"/friends"}>Show all friends...</NavLink></p>

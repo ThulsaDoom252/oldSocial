@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import authHoc from "../HOC/authHoc";
 import withRouter from "../HOC/withRouter";
 import ProfileContainer from "./ProfileContainer";
-import {initializeProfileTC} from "../../redux/appSlice";
+import {initializeProfileThunk} from "../../redux/appSlice";
 import EmptyProfileTemplate from "./EmptyProfileTemplate";
 
 const ProfileRelay = (props, {showMobileVersion}) => {
@@ -31,6 +31,6 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default compose(connect(mapStateToProps, {initializeProfileTC}), authHoc, withRouter)(ProfileRelay)
+export default compose(connect(mapStateToProps, {initializeProfileTC: initializeProfileThunk}), authHoc, withRouter)(ProfileRelay)
 
 

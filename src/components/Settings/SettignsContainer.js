@@ -2,38 +2,32 @@ import React, {useState} from 'react';
 import authHoc from "../HOC/authHoc";
 import {connect} from "react-redux";
 import {compose} from "redux";
-import {
-    directEditModeAC,
-    toggleEmailAC,
-    toggleMobileVersionAC,
-    toggleNightModeAC,
-    toggleWallAC
-} from "../../redux/settingsSlice";
 import Settings from "./Settings";
+import {toggleDirectEditMode, toggleMobileVersion, toggleNightMode} from "../../redux/settingsSlice";
 
 const SettingsContainer = ({
                                nightMode,
                                directEditMode,
-                               hideProfileWall,
                                showMobileVersion,
-                               hideEmail,
-                               toggleNightModeAC,
-                               directEditModeAC,
-                               toggleWallAC,
-                               toggleMobileVersionAC,
-                               toggleEmailAC,
+                               toggleNightMode,
+                               toggleDirectEditMode,
+                               toggleMobileVersion,
 
                            }) => {
     const [currentSettingsGroup, setCurrentSettingsGroup] = useState(1)
 
     const handleCurrentSettingsGroup = (number) => setCurrentSettingsGroup(number)
 
-
     return <Settings {...{
-        nightMode, directEditMode, hideProfileWall, showMobileVersion, hideEmail, toggleNightModeAC, directEditModeAC,
-        toggleWallAC, toggleMobileVersionAC, toggleEmailAC, handleCurrentSettingsGroup, currentSettingsGroup
+        nightMode,
+        directEditMode,
+        showMobileVersion,
+        toggleNightMode,
+        toggleDirectEditMode,
+        toggleMobileVersion,
+        handleCurrentSettingsGroup,
+        currentSettingsGroup
     }}/>
-
 }
 
 const settingsState = (state) => {
@@ -41,16 +35,12 @@ const settingsState = (state) => {
         auth: state.auth.isLogged,
         nightMode: state.settings.nightMode,
         directEditMode: state.settings.directEditMode,
-        hideProfileWall: state.settings.hideProfileWall,
         showMobileVersion: state.settings.showMobileVersion,
-        hideEmail: state.settings.hideEmail,
     }
 }
 
 export default compose(connect(settingsState, {
-    toggleNightModeAC,
-    directEditModeAC,
-    toggleWallAC,
-    toggleMobileVersionAC,
-    toggleEmailAC
+    toggleNightMode,
+    toggleDirectEditMode,
+    toggleMobileVersion,
 }), authHoc)(SettingsContainer)

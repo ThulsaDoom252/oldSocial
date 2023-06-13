@@ -1,10 +1,8 @@
 import React from 'react';
 import {useEffect} from "react";
-import {avatarAC, setAvatarTC} from "../../redux/profile/profileSlice";
-import {logOutTC} from "../../redux/authSlice";
-import {delay} from "../../redux/commonRefs";
+import {setCurrentUserAvatarThunk} from "../../redux/profile/profileSlice";
+import {logOutThunk} from "../../redux/authSlice";
 import {useSelector} from "react-redux";
-import {toggleNightModeAC} from "../../redux/settingsSlice";
 import Header from "./Header";
 
 const HeaderContainer = ({dispatch}) => {
@@ -15,17 +13,13 @@ const HeaderContainer = ({dispatch}) => {
     const currentUserAvatar = useSelector(state => state.profilePage.currentUserAvatar)
     const fetching = useSelector(state => state.common.fetchAuthData)
     useEffect(() => {
-        setAvatarTC(`${userId}`)
+        setCurrentUserAvatarThunk(`${userId}`)
     }, [])
 
-    const turnOffNightMode = () => nightMode && toggleNightModeAC(false)
-
     const handleLogOut = async () => {
-        dispatch(logOutTC())
-        turnOffNightMode()
-        await delay(2000)
-        avatarAC(null)
+        dispatch(logOutThunk())
     }
+
     return (
         <Header {...{isLogged, userName, nightMode, userId, currentUserAvatar, fetching, handleLogOut}}/>
     );

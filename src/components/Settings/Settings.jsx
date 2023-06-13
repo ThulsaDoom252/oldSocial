@@ -2,9 +2,10 @@ import React from 'react';
 import {nightModeStyles} from "../../common/nightModeStyles";
 import SettingsBlock from "./Settings-block";
 
-const Settings = ({currentSettingsGroup, handleCurrentSettingsGroup, nightMode, toggleNightModeAC, showMobileVersion,
-                      toggleMobileVersionAC, directEditModeAC, directEditMode, hideProfileWall, hideEmail,
-                      toggleWallAC, toggleEmailAC}) => {
+const Settings = ({
+                      currentSettingsGroup, handleCurrentSettingsGroup, nightMode, toggleNightMode, showMobileVersion,
+                      toggleMobileVersion, toggleDirectEditMode, directEditMode
+                  }) => {
     return (
         <div style={nightMode ? nightModeStyles.settings : null} className={"settings-page-container"}>
             <div className="settings-left-part">
@@ -20,17 +21,15 @@ const Settings = ({currentSettingsGroup, handleCurrentSettingsGroup, nightMode, 
                 <div className={"settings-right-part-block"}>
                     {currentSettingsGroup === 1 &&
                         <div>
-                            <SettingsBlock label={"NightMode"} option={nightMode} setOption={toggleNightModeAC}
-                                           disabled={false}/>
-                            <SettingsBlock className={"show-mobile-version-switch"} label={"Show Mobile Version"}
-                                           option={showMobileVersion}
-                                           setOption={toggleMobileVersionAC}/>
+                            <SettingsBlock label={"Direct on profile page"} option={directEditMode}
+                                           setOption={toggleDirectEditMode}/>
                         </div>}
                     {currentSettingsGroup === 2 && <div>
-                        <SettingsBlock label={"Direct on profile page"} option={directEditMode}
-                                       setOption={directEditModeAC}/>
-                        <SettingsBlock label={"Hide wall"} option={hideProfileWall} setOption={toggleWallAC}/>
-                        <SettingsBlock label={"Hide email"} option={hideEmail} setOption={toggleEmailAC}/>
+                        <SettingsBlock label={"NightMode"} option={nightMode} setOption={toggleNightMode}
+                                       disabled={false}/>
+                        <SettingsBlock className={"show-mobile-version-switch"} label={"Mobile Version"}
+                                       option={showMobileVersion}
+                                       setOption={toggleMobileVersion}/>
                     </div>}
                 </div>
             </div>

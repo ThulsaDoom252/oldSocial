@@ -1,16 +1,5 @@
 import {apiCaller, profileApi} from "../../api/api";
-import photo1 from "./photo-1.jpeg"
-import photo2 from "./photo-2.webp"
-import photo3 from "./photo-3.webp"
-import photo4 from "./photo-4.jfif"
-import photo5 from "./photo-5.png"
-import photo6 from "./photo-6.webp"
-import photo7 from "./photo-7.jpg"
-import photo8 from "./photo-8.png"
-import photo9 from "./photo-9.png"
-import photo10 from "./photo-10.png"
 import React from "react";
-import {avatarDataFetchingAC} from "../commonSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
     aboutData,
@@ -46,7 +35,7 @@ const profileSlice = createSlice({
         status: '',
         errorMessage: null,
         notFound: null,
-        userPhotos: [photo1, photo2, photo3, photo4, photo5, photo6, photo7, photo8, photo9, photo10]
+        userPhotos: ["photo-9.png", "photo-2.webp", "photo-3.webp", "photo-4.jfif", "photo-5.png", "photo-6.webp", "photo-7.jpg", "photo-8.png", "photo-9.png", "photo-10.png"]
     },
     reducers: {
         toggleStatusDataUploadStatus(state, action) {
@@ -54,9 +43,6 @@ const profileSlice = createSlice({
         },
         toggleStatusDataFetch(state, action) {
             state.fetchStatusData = action.payload
-        },
-        notFoundAC(state, action) {
-            state.notFound = action.payload
         },
         toggleUserDataUploadStatus(state, action) {
             state.userDataUploadStatus = action.payload
@@ -73,7 +59,7 @@ const profileSlice = createSlice({
         toggleIsLookingForAJobDataUploadStatus(state, action) {
             state.isLookingForAJobDataUploadStatus = action.payload
         },
-        photoAC(state, action) {
+        changeUserAvatar(state, action) {
             const {photo} = action.payload
             state.photos = photo
             state.profile = {...state.profile, photos: photo}
@@ -93,7 +79,7 @@ const profileSlice = createSlice({
         toggleJobDescriptionDataFetch(state, action) {
             state.jobDescriptionDataFetch = action.payload
         },
-        avatarAC(state, action) {
+        setCurrentUserAvatar(state, action) {
             state.currentUserAvatar = action.payload
         },
         setUserProfile(state, action) {
@@ -107,10 +93,10 @@ const profileSlice = createSlice({
             })
             state.contacts = [...contactsArray]
         },
-        statusAC(state, action) {
+        setStatus(state, action) {
             state.status = action.payload
         },
-        changeCurrentContactDataAC(state, action) {
+        setSelectedContactData(state, action) {
             state.selectedContact = action.payload
         },
         changeContactValue(state, action) {
@@ -124,10 +110,10 @@ const profileSlice = createSlice({
             }).then(() => console.log('success'))
             return void 0
         },
-        showOverlayAC(state, action) {
-            const {toggleRelay, toggleViewPort, index, contactId, contactValue} = action.payload
-            state.showOverlay = toggleRelay
-            state.showOverlayPhotoViewport = toggleViewPort
+        toggleOverlay(state, action) {
+            const {showOverlay, showPhotoViewPort, index, contactId, contactValue} = action.payload
+            state.showOverlay = showOverlay
+            state.showOverlayPhotoViewport = showPhotoViewPort
             state.selectedPhoto = index
             state.selectedContactId = contactId
             state.selectedContact = contactValue
@@ -147,22 +133,19 @@ export const {
     toggleAboutDataUploadStatus,
     toggleJobDescriptionDataUploadStatus,
     toggleIsLookingForAJobDataUploadStatus,
-    showOverlayAC,
-    notFoundAC,
+    toggleOverlay,
     toggleUserDataUploadStatus,
-    avatarAC,
-    changeCurrentContactDataAC,
+    setCurrentUserAvatar,
+    setSelectedContactData,
     setUserProfile,
-    statusAC,
+    setStatus,
     changeContactValue,
-    photoAC,
+    changeUserAvatar,
     toggleUserDataFetch,
 } = profileSlice.actions
 
 //THUNKS
-
-
-export const setUserTC = createAsyncThunk('set-user-thunk', async (userId, {dispatch}) => {
+export const setUserThunk = createAsyncThunk('set-user-thunk', async (userId, {dispatch}) => {
     try {
         dispatch(toggleUserDataFetch(true))
         const data = await apiCaller.setUsers(userId)
@@ -177,16 +160,16 @@ export const setUserTC = createAsyncThunk('set-user-thunk', async (userId, {disp
     dispatch(toggleUserDataFetch(false))
 })
 
-export const getStatusTC = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
+export const setStatusThunk = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
     const response = await profileApi.getStatus(userId)
-    dispatch(statusAC(response.data))
+    dispatch(setStatus(response.data))
 })
 
-export const updateStatusTC = createAsyncThunk('updateStatus-thunk', async (status, {dispatch}) => {
+export const updateStatusThunk = createAsyncThunk('updateStatus-thunk', async (status, {dispatch}) => {
     dispatch(toggleStatusDataFetch(true))
     const data = await profileApi.updateStatus(status)
     if (data.resultCode === 0) {
-        dispatch(statusAC(status))
+        dispatch(setStatus(status))
         dispatch(toggleStatusDataUploadStatus(true))
         await delay(200)
         dispatch(toggleStatusDataUploadStatus(false))
@@ -196,20 +179,16 @@ export const updateStatusTC = createAsyncThunk('updateStatus-thunk', async (stat
     dispatch(toggleStatusDataFetch(false))
 })
 
-export const setAvatarTC = createAsyncThunk('set-avatar-thunk', async (userId, {dispatch}) => {
-    dispatch(avatarDataFetchingAC(true))
+export const setCurrentUserAvatarThunk = createAsyncThunk('set-avatar-thunk', async (userId, {dispatch}) => {
     const data = await apiCaller.setUsers(userId)
-    dispatch(avatarAC(data.photos.small))
-    dispatch(avatarDataFetchingAC(false))
+    dispatch(setCurrentUserAvatar(data.photos.small))
 })
 
-export const updatePhotoTC = createAsyncThunk('update-photo-thunk', async (photo, {dispatch}) => {
-    dispatch(avatarDataFetchingAC(true))
+export const updateAvatarThunk = createAsyncThunk('update-photo-thunk', async (photo, {dispatch}) => {
     const response = await profileApi.updatePhoto(photo)
     if (response.data.resultCode === 0) {
-        dispatch(photoAC({photo: response.data.data.photos}))
-        dispatch(avatarAC(response.data.data.photos.small))
-        dispatch(avatarDataFetchingAC(false))
+        dispatch(changeUserAvatar({photo: response.data.data.photos}))
+        dispatch(setCurrentUserAvatar(response.data.data.photos.small))
     }
 })
 
@@ -219,7 +198,7 @@ export const updatePhotoTC = createAsyncThunk('update-photo-thunk', async (photo
 //     github, vk, facebook, instagram, twitter,
 //         website, youtube, mainLink
 
-export const updateProfileTC = createAsyncThunk('update-profile-thunk',
+export const updateProfileThunk = createAsyncThunk('update-profile-thunk',
     async ({
                about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
                website, youtube, mainlink, fetchData,

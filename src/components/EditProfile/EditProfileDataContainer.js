@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useFormik} from 'formik'
 import * as Yup from "yup";
 import {connect} from "react-redux";
-import {updatePhotoTC, updateProfileTC} from "../../redux/profile/profileSlice";
+import {updateAvatarThunk, updateProfileThunk} from "../../redux/profile/profileSlice";
 import EditProfileData from "./EditProfileData";
 import {allData} from "../../redux/profile/constants";
 
@@ -110,5 +110,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    updateProfileTC, updatePhotoTC
+    updateProfileTC: updateProfileThunk, updatePhotoTC: updateAvatarThunk
 })(EditProfileDataContainer);

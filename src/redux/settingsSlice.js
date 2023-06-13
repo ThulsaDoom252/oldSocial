@@ -6,35 +6,24 @@ const settingsSlice = createSlice({
         nightMode: false,
         directEditMode: true,
         showFakeModules: true,
-        hideProfileWall: false,
         showMobileVersion: false,
-        hideEmail: false,
     },
     reducers: {
-        toggleNightModeAC(state, action) {
+        toggleNightMode(state, action) {
             state.nightMode = action.payload
         },
-        directEditModeAC(state, action) {
+        toggleDirectEditMode(state, action) {
             state.directEditMode = action.payload
         },
-        toggleWallAC(state, action) {
-            state.hideProfileWall = action.payload
-        },
-        toggleMobileVersionAC(state, action) {
+        toggleMobileVersion(state, action) {
             state.showMobileVersion = action.payload
         },
-        toggleEmailAC(state, action) {
-            state.hideEmail = action.payload
-        },
     }
-
 })
 
 export default settingsSlice.reducer
 export const {
-    toggleNightModeAC,
-    toggleWallAC,
-    directEditModeAC,
-    toggleEmailAC,
-    toggleMobileVersionAC
+    toggleNightMode,
+    toggleDirectEditMode,
+    toggleMobileVersion
 } = settingsSlice.actions

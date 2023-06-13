@@ -2,27 +2,26 @@ import React, {useEffect, useState} from "react";
 import ProfileCenterPart from "./ProfileCenterPart/ProfileCenterPart";
 import {connect, useSelector} from "react-redux";
 import {
-    getStatusTC,
-    setUserTC, showOverlayAC, updateProfileTC, updateStatusTC, updatePhotoTC,
+    setStatusThunk,
+    setUserThunk, toggleOverlay, updateProfileThunk, updateStatusThunk, updateAvatarThunk,
 } from "../../redux/profile/profileSlice";
 import ProfileLeftPart from "./LeftPart";
 import ProfileRightPart from "./RightPart";
-import {getFriendsTC, unfollowFriendTC} from "../../redux/userSlice";
+import {getFriendsThunk, unfollowFriendThunk} from "../../redux/userSlice";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {getContactIcon} from "../../redux/profile/contactsRef";
 import {aboutData, isLookingForAJobData} from "../../redux/profile/constants";
 
-const ProfileContainer = (props) => {
-    const {
-        updateProfileTC,
-        showOverlayAC,
-        getFriendsTC,
-        userIdRouterParam,
-        unfollowFriendTC,
-        updateStatusTC,
-        updatePhotoTC,
-    } = props
+const ProfileContainer = ({
+                              updateProfileThunk,
+                              toggleOverlay,
+                              getFriendsThunk,
+                              userIdRouterParam,
+                              unfollowFriendThunk,
+                              updateStatusThunk,
+                              updatePhotoThunk,
+                          }) => {
 
     const aboutDataFetch = useSelector(state => state.profilePage.aboutDataFetch)
     const nameDataFetch = useSelector(state => state.profilePage.nameDataFetch)
@@ -46,9 +45,7 @@ const ProfileContainer = (props) => {
     const defaultAvatar = useSelector(state => state.dialogsPage.defaultAvatar)
     const friends = useSelector(state => state.usersPage.friends)
     const directEditMode = useSelector(state => state.settings.directEditMode)
-    const hideProfileWall = useSelector(state => state.settings.hideProfileWall)
     const showMobileVersion = useSelector(state => state.settings.showMobileVersion)
-    const hideEmail = useSelector(state => state.settings.hideEmail)
     const nightMode = useSelector(state => state.settings.nightMode)
     const fetchPersonalData = useSelector(state => state.common.fetchPersonalData)
     const fetchStatusData = useSelector(state => state.profilePage.fetchStatusData)
@@ -63,7 +60,7 @@ const ProfileContainer = (props) => {
 
     useEffect(() => {
         if (isCurrentUser) {
-            getFriendsTC(100)
+            getFriendsThunk(100)
         }
     }, [])
 
@@ -100,7 +97,7 @@ const ProfileContainer = (props) => {
             setEditMode(true)
         } else if (editMode === true && !errors.about) {
             setEditMode(false)
-            updateProfileTC({
+            updateProfileThunk({
                 about: values.aboutMe ? values.aboutMe : "no info",
                 fetchData: aboutData
             })
@@ -113,7 +110,7 @@ const ProfileContainer = (props) => {
     }
 
     const profileLeftPartProps = [aboutFormik.values, aboutFormik.errors, aboutFormik.handleChange,
-        aboutEditMode, setAboutEditMode, email, toggleAboutEditMode, aboutBlockStyle, hideEmail, aboutDataFetch]
+        aboutEditMode, setAboutEditMode, email, toggleAboutEditMode, aboutBlockStyle, aboutDataFetch]
     const commonProps = [isCurrentUser, pointerCursor, nightMode, userId, notFound]
 
     //////Status block
@@ -130,7 +127,7 @@ const ProfileContainer = (props) => {
     const toggleStatusEdit = () => {
         if (statusEditMode) {
             setStatusEditMode(false)
-            updateStatusTC(statusValue)
+            updateStatusThunk(statusValue)
         } else if (!statusEditMode && isCurrentUser) {
             setStatusEditMode(true)
         }
@@ -140,7 +137,7 @@ const ProfileContainer = (props) => {
 
     ////////// Avatar & contacts block
     const hiddenFileInput = React.useRef(null);
-    const uploadPhoto = (e) => updatePhotoTC(e.target.files[0])
+    const uploadPhoto = (e) => updatePhotoThunk(e.target.files[0])
     const handleAvatarClick = () => isCurrentUser ? hiddenFileInput.current.click() : void 0;
     const contactUrlError = Yup.string().matches(/((https?):\/\/)?(www.)?[a-z\d]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z\d#]+)*\/?(\?[a-zA-Z\d-_]+=[a-zA-Z\d-%]+&?)?$/, 'Enter correct url!').nullable()
     const avatarBlockFormik = useFormik({
@@ -175,7 +172,7 @@ const ProfileContainer = (props) => {
             setEditMode(true)
         } else if (editMode && !avatarBlockFormik.errors.name) {
             setEditMode(false)
-            updateProfileTC({
+            updateProfileThunk({
                 name: avatarBlockFormikValues.fullName,
                 github: avatarBlockFormikValues.github,
                 vk: avatarBlockFormikValues.vk,
@@ -193,10 +190,8 @@ const ProfileContainer = (props) => {
     const handleContactBlockEditMode = (e, contactId, contactValue) => {
         if (contactsBlockEditMode) {
             e.preventDefault()
-            showOverlayAC({
-                toggleRelay: true,
-                toggleViewPort: false,
-                index: null,
+            toggleOverlay({
+                showOverlay: true,
                 contactId,
                 contactValue
             })
@@ -215,8 +210,7 @@ const ProfileContainer = (props) => {
         handleContactBlockEditMode, contactsData, pointerCursor, hiddenFileInput, largePhoto, nameDataFetch, nameDataUploadStatus]
 
     /////////////Profile Data
-    const {lookingForAJob: applicant, lookingForAJobDescription: description} = profile
-    const {lookingForAJob} = profile
+    const {lookingForAJob, lookingForAJobDescription: description} = profile
     const [descriptionEditMode, setDescriptionEditMode] = useState(false)
     const [centerProfileAboutEditMode, setCenterProfileAboutEditMode] = useState(false)
     const profileFormik = useFormik({
@@ -244,7 +238,7 @@ const ProfileContainer = (props) => {
     }
 
     const handleUpdateProfileData = (fetchData, isApplicant = dataValues.lookingForAJob) => {
-        updateProfileTC({
+        updateProfileThunk({
             about: dataValues.about,
             isApplicant,
             description: dataValues.applicantDescription,
@@ -252,7 +246,6 @@ const ProfileContainer = (props) => {
             fetchData,
         })
     }
-
 
     const directEditFunc = isCurrentUser && directEditMode
 
@@ -269,20 +262,27 @@ const ProfileContainer = (props) => {
         handleChangeIsLookingForAJobInfo
     ]
 
+    //Right Part
+    const handleUnfollowFriend = (friendId, index) => unfollowFriendThunk({friendId, index})
+
+    const handleSelectedPhoto = (index) => {
+        toggleOverlay({showOverlay: true, showPhotoViewPort: true, index})
+    }
+
     return (
         <div className={"profile-main-container"}>
             {!showMobileVersion &&
                 <ProfileLeftPart {...{profileLeftPartProps, commonProps}}/>}
             <ProfileCenterPart  {...{
                 fullName, largePhoto, isCurrentUser, notFound, directEditMode, defaultAvatar,
-                userPhotos, showOverlayAC, friends, nightMode, hideProfileWall,
-                updatePhotoTC, showMobileVersion, fetchPersonalData, profileAvatarProps, statusProps,
+                userPhotos, showOverlayAC: toggleOverlay, friends, nightMode,
+                updatePhotoTC: updatePhotoThunk, showMobileVersion, fetchPersonalData, profileAvatarProps, statusProps,
                 profileDataProps,
             }}/>
             {!showMobileVersion &&
                 <ProfileRightPart {...{
-                    defaultAvatar, friends, userPhotos, showOverlayAC,
-                    unfollowFriendTC, nightMode,
+                    defaultAvatar, friends, userPhotos, handleSelectedPhoto,
+                    nightMode, handleUnfollowFriend
                 }}/>}
         </div>
     )
@@ -291,14 +291,14 @@ const ProfileContainer = (props) => {
 export default connect(
     null,
     {
-        setUserTC,
-        getStatusTC,
-        showOverlayAC,
-        getFriendsTC,
-        updateProfileTC,
-        updateStatusTC,
-        unfollowFriendTC,
-        updatePhotoTC,
+        setUserThunk,
+        setStatusThunk,
+        toggleOverlay,
+        getFriendsThunk,
+        updateProfileThunk,
+        updateStatusThunk,
+        unfollowFriendThunk,
+        updateAvatarThunk,
     }
 )(ProfileContainer);
 

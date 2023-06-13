@@ -5,7 +5,7 @@ import {fetchUiSpin} from "../../redux/commonSlice";
 
 const LeftPart = ({profileLeftPartProps, commonProps}) => {
     const [values, errors, handleChange, aboutEditMode, setAboutEditMode, email, toggleAboutEditMode, aboutBlockStyle,
-        hideEmail, aboutDataFetch] = profileLeftPartProps
+         aboutDataFetch] = profileLeftPartProps
     const [isCurrentUser, pointerCursor, nightMode, userId] = commonProps
 
     return (
@@ -30,10 +30,10 @@ const LeftPart = ({profileLeftPartProps, commonProps}) => {
                     {isCurrentUser && errors.about ? <p className={"error"}>{errors.about}</p> : null}
 
                 </div>
-                {!hideEmail && <div>
+                <div>
                     <p className={"profile-page-left-part-label"}>Email</p>
                     {isCurrentUser ? email : "No email"}
-                </div>}
+                </div>
             </div>
             <div className={"profile-page-left-part-button"}>
                 <button><HiOutlineDotsHorizontal/></button>

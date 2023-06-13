@@ -1,13 +1,12 @@
-import {loginTC} from "./authSlice";
+import {getAuthDataThunk} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {getStatusTC,  setUserTC} from "./profile/profileSlice";
+import {setStatusThunk, setUserThunk} from "./profile/profileSlice";
 
 const appSlice = createSlice({
     name: 'app-slice',
     initialState: {
         initialized: false,
         profileInitialized: false,
-        hideNonFunctionalPages: false,
         nightMode: false,
         nightModeColors: {
             "sidebar/header-background": "#0B18DCFF",
@@ -29,11 +28,8 @@ const appSlice = createSlice({
         },
     },
     reducers: {
-        initializeAC(state) {
+        initializeApp(state) {
             state.initialized = true
-        },
-        toggleNonFunctionalPages(state, action) {
-            state.hideNonFunctionalPages = action.payload
         },
         initializeProfile(state, action) {
             state.profileInitialized = action.payload
@@ -42,15 +38,15 @@ const appSlice = createSlice({
 })
 
 export default appSlice.reducer
-export const {initializeAC, initializeProfile} = appSlice.actions
+export const {initializeApp, initializeProfile} = appSlice.actions
 
 //THUNKS
-export const initializeTC = createAsyncThunk('initializing-thunk',
+export const initializeAppThunk = createAsyncThunk('initializing-thunk',
     async (_, {dispatch}) => {
         try {
-            const promise = dispatch(loginTC())
+            const promise = dispatch(getAuthDataThunk())
             Promise.all([promise]).then(() => {
-                dispatch(initializeAC())
+                dispatch(initializeApp())
             })
         } catch (error) {
             console.log(error)
@@ -58,12 +54,12 @@ export const initializeTC = createAsyncThunk('initializing-thunk',
 
     })
 
-export const initializeProfileTC = createAsyncThunk('initialize-profile-thunk', async (userId, {dispatch}) => {
+export const initializeProfileThunk = createAsyncThunk('initialize-profile-thunk', async (userId, {dispatch}) => {
     try {
         debugger
         dispatch(initializeProfile(false))
-        const initializeUserData = dispatch(setUserTC(userId))
-        const initializeUserStatus = dispatch(getStatusTC(userId))
+        const initializeUserData = dispatch(setUserThunk(userId))
+        const initializeUserStatus = dispatch(setStatusThunk(userId))
         Promise.all([initializeUserData, initializeUserStatus]).then(() => {
             dispatch(initializeProfile(true))
         })

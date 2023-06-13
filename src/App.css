@@ -545,7 +545,7 @@ input:-webkit-autofill:active {
 
 .signIn-input-error {
     bottom: 45px;
-    color: red;
+    color: #fff200;
     position: absolute;
 }
 
@@ -1452,17 +1452,23 @@ input:-webkit-autofill:active {
     background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
 }
 
-.overlay-close-button {
-    cursor: pointer;
-    z-index: 3;
+.overlay-photo-item {
     position: relative;
-    right: -200px;
-    top: -20px;
-    color: red;
+    width: 700px;
 }
 
-.currently-viewing-photo {
-    width: 700px;
+.overlay-photo {
+    width: 100%;
+}
+
+.overlay-close-btn {
+    font-size: 1.5rem;
+    color: white;
+    position: absolute;
+    right: 40px;
+    top: 20px;
+    z-index: 3;
+    cursor: pointer;
 }
 
 .profile-contact-viewport {
@@ -1483,7 +1489,7 @@ input:-webkit-autofill:active {
     text-align: center;
 }
 
-.currently-viewing-contact-button {
+.overlay-contact-update-btn {
     background-color: white;
     border: black solid thin;
     cursor: pointer;
@@ -1722,7 +1728,6 @@ input:-webkit-autofill:active {
 /********************!*LOGIN-PAGE*!*/
 
 @media only screen and (max-width: 1149px) {
-
     .login-page-right-part-signUp-block {
         display: none;
     }
@@ -1946,6 +1951,10 @@ input:-webkit-autofill:active {
 
     .edit-profile-mobile-contact-input {
         width: 27%;
+    }
+
+    .users-page-user-block {
+        width: 90%;
     }
 }
 
@@ -2182,13 +2191,15 @@ input:-webkit-autofill:active {
 /***********************************************USERS*********************************************/
 .users-page-container {
     margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     border-radius: 5px;
     font-family: "Open Sans";
     min-height: 400px;
     background-color: #d2c4c4;
     padding: 20px;
     overflow-y: scroll;
-
 }
 
 .users-page-title {
@@ -2199,6 +2210,7 @@ input:-webkit-autofill:active {
 
 .users-page-users-grid {
     display: grid;
+    width: 100%;
     height: 622px;
     max-height: fit-content;
     margin: 40px auto auto auto;
@@ -2222,7 +2234,7 @@ input:-webkit-autofill:active {
 .users-data-block {
     position: relative;
     top: -5px;
-    width: 121px;
+    width: 100%;
     background-color: white;
     border-left: gray thin solid;
     border-right: gray thin solid;

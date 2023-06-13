@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import authHoc from "../HOC/authHoc";
 import EditProfileDataEmptyTemplate from "./EditProfileDataEmptyTemplate";
 import EditProfileDataContainer from "./EditProfileDataContainer";
-import {setUserTC} from "../../redux/profile/profileSlice";
+import {setUserThunk} from "../../redux/profile/profileSlice";
 
 const EditProfileDataRelay = ({setUserTC, profile}) => {
     useEffect(() => {
@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {setUserTC})(authHoc(EditProfileDataRelay));
+export default connect(mapStateToProps, {setUserTC: setUserThunk})(authHoc(EditProfileDataRelay));
 
 
 //
