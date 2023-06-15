@@ -1,31 +1,32 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
-import {
-    BiMessageSquareDetail,
-    FaUserFriends,
-    ImUsers,
-    IoSettingsOutline,
-    RiLogoutBoxRLine, TfiGallery,
-    TfiUser
-} from "react-icons/all";
-import {fetchUiHeader} from "../../redux/commonSlice";
+import {BiMessageSquareDetail} from "react-icons/bi"
+import {FaUserFriends} from "react-icons/fa"
+import {ImUsers} from "react-icons/im"
+import {IoSettingsOutline} from "react-icons/io5"
+import {RiLogoutBoxRLine} from "react-icons/ri"
+import {TfiGallery, TfiUser} from "react-icons/tfi"
+import defaultAvatar from "../common/default-avatar.jfif"
 
-const Header = ({userId, handleLogOut, userName, isLogged, avatar, fetching}) => {
+const Header = ({userId, handleLogOut, userName, isLogged, currentUserAvatar}) => {
     const navButtonsClass = "header-navbar-button"
     const navButtonsActiveClass = "header-navbar-button-active"
     return (
         <div className={'box'} hidden={!isLogged}>
             <header className={"header-container"}>
-                {!fetching ? <div className={"header-current-user-block"}> {avatar &&
-                    <img className={"header-current-user-avatar"} src={avatar}
-                         alt={"user-avatar"}/>}
+                <div className={"header-current-user-block"}>
+                    <div className={"header-current-avatar-item"}>
+                        <img className={"header-current-avatar"}
+                             src={currentUserAvatar ? currentUserAvatar : defaultAvatar}
+                             alt={"user-avatar"}/>
+                    </div>
                     <NavLink to={`/profile/` + userId}
                              className={"header-current-user-name"}>{userName}</NavLink>
                     <button title="logout" className={"header-logout-button"} onClick={handleLogOut}>
                         <RiLogoutBoxRLine/>
                         <span className={"header-logOut-label"}>Log out</span>
                     </button>
-                </div> : fetchUiHeader}
+                </div>
                 <div className={"header-navbar"}>
                     <NavLink className={state => state.isActive ? navButtonsActiveClass : navButtonsClass}
                              to={`/profile/${userId}`}><TfiUser/>Profile</NavLink>

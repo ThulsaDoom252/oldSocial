@@ -1,78 +1,110 @@
 import {apiCaller, profileApi} from "../../api/api";
-import photo1 from "./photo-1.jpeg"
-import photo2 from "./photo-2.webp"
-import photo3 from "./photo-3.webp"
-import photo4 from "./photo-4.jfif"
-import photo5 from "./photo-5.png"
-import photo6 from "./photo-6.webp"
-import photo7 from "./photo-7.jpg"
-import photo8 from "./photo-8.png"
-import photo9 from "./photo-9.png"
-import photo10 from "./photo-10.png"
-
 import React from "react";
-import {avatarDataFetchingAC, personalDataFetchingAC, statusDataFetchingAC} from "../commonSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {delay} from "../../common/commonFuncs";
+import {aboutData, isLookingForAJobData, lookingForAJobDataInfo, nameData} from "../../common/commonData";
 
 const profileSlice = createSlice({
     name: 'profile',
     initialState: {
-        avatar: null,
-        avatarLarge: null,
+        currentUserAvatar: null,
+        fetchStatusData: false,
+        fetchUserData: false,
+        aboutDataFetch: false,
+        profilePageNotFound: false,
+        nameDataFetch: false,
+        statusDataUploadStatus: null,
+        isLookingForAJobDataFetch: false,
+        jobDescriptionDataFetch: false,
+        profileDataUpdated: false,
+        isCurrentProfileFollowed: false,
+        userDataUploadStatus: null,
+        aboutDataUploadStatus: null,
+        nameDataUploadStatus: null,
+        isLookingForAJobDataUploadStatus: null,
+        jobDescriptionUploadStats: null,
         directEditMode: false,
-        profile: '',
+        profile: {},
         contacts: [],
         showOverlay: false,
         showOverlayPhotoViewport: false,
         selectedPhoto: null,
         selectedContact: null,
         selectedContactId: null,
-        currentUserAvatar: null,
-        name: null,
-        about: null,
-        applicant: null,
-        description: null,
-        github: null,
-        vk: null,
-        facebook: null,
-        instagram: null,
-        twitter: null,
-        site: null,
-        youtube: null,
-        link: null,
-        dataReceived: false,
         status: '',
-        result: null,
         errorMessage: null,
         notFound: null,
-        statusError: null,
-        defaultPhotos: [photo1, photo2, photo3, photo4, photo5, photo6, photo7, photo8, photo9, photo10]
+        userPhotos: ["photo-9.png", "photo-2.webp", "photo-3.webp", "photo-4.jfif", "photo-5.png", "photo-6.webp", "photo-7.jpg", "photo-8.png", "photo-9.png", "photo-10.png"]
     },
     reducers: {
-        dataReceivedAC(state, action) {
-            state.dataReceived = action.payload
+        toggleStatusDataUploadStatus(state, action) {
+            state.statusDataUploadStatus = action.payload
         },
-        statusErrorAC(state, action) {
-            state.statusError = action.payload
+        toggleStatusDataFetch(state, action) {
+            state.fetchStatusData = action.payload
         },
-        resultAC(state, action) {
-            state.result = action.payload
+        toggleUserDataUploadStatus(state, action) {
+            state.userDataUploadStatus = action.payload
         },
-        notFoundAC(state, action) {
-            state.notFound = action.payload
+        toggleAboutDataUploadStatus(state, action) {
+            state.aboutDataUploadStatus = action.payload
         },
-        photoAC(state, action) {
+        toggleNameDataUploadStatus(state, action) {
+            state.nameDataUploadStatus = action.payload
+        },
+        toggleJobDescriptionDataUploadStatus(state, action) {
+            state.jobDescriptionUploadStatus = action.payload
+        },
+        toggleIsLookingForAJobDataUploadStatus(state, action) {
+            state.isLookingForAJobDataUploadStatus = action.payload
+        },
+        toggleProfilePageNotFound(state, action) {
+            state.profilePageNotFound = action.payload
+        },
+        changeUserAvatar(state, action) {
             const {photo} = action.payload
             state.photos = photo
             state.profile = {...state.profile, photos: photo}
         },
-        avatarAC(state, action) {
-            state.avatar = action.payload
+        toggleUserDataFetch(state, action) {
+            state.fetchUserData = action.payload
+        },
+        toggleIsCurrentProfileFollowed(state, action) {
+            state.isCurrentProfileFollowed = action.payload
+        },
+        toggleAboutDataFetch(state, action) {
+            state.aboutDataFetch = action.payload
+        },
+        toggleNameDataFetch(state, action) {
+            state.nameDataFetch = action.payload
+        },
+        toggleIsLookingForAJobDataFetch(state, action) {
+            state.isLookingForAJobDataFetch = action.payload
+        },
+        toggleProfileDataUpdateStatus(state, action) {
+            state.profileDataUpdated = action.payload
+        },
+        toggleJobDescriptionDataFetch(state, action) {
+            state.jobDescriptionDataFetch = action.payload
+        },
+        setCurrentUserAvatar(state, action) {
+            debugger
+            state.currentUserAvatar = action.payload
         },
         setUserProfile(state, action) {
-            const {profile} = action.payload
+            const {profile, friends} = action.payload
             const contacts = profile.contacts
             const contactsArray = []
+            state.isCurrentProfileFollowed = false
+            if (friends) {
+                state.isCurrentProfileFollowed = friends.some(friend => {
+                    if (friend.id === profile.userId) {
+                        return true
+                    } else {
+                        return false
+                    }
+                });
+            }
             state.profile = profile
             state.photos = profile.photos
             Object.keys(contacts).forEach(contact => {
@@ -80,10 +112,10 @@ const profileSlice = createSlice({
             })
             state.contacts = [...contactsArray]
         },
-        statusAC(state, action) {
+        setStatus(state, action) {
             state.status = action.payload
         },
-        changeCurrentContactDataAC(state, action) {
+        setSelectedContactData(state, action) {
             state.selectedContact = action.payload
         },
         changeContactValue(state, action) {
@@ -93,138 +125,111 @@ const profileSlice = createSlice({
                     ...contact,
                     value: selectedContact
                 } : {...contact})
-                console.log(state.contacts)
-                debugger
                 resolve()
             }).then(() => console.log('success'))
             return void 0
         },
-        showOverlayAC(state, action) {
-            const {toggleRelay, toggleViewPort, index, contactId, contactValue} = action.payload
-            state.showOverlay = toggleRelay
-            state.showOverlayPhotoViewport = toggleViewPort
+        toggleOverlay(state, action) {
+            const {showOverlay, showPhotoViewPort, index, contactId, contactValue} = action.payload
+            state.showOverlay = showOverlay
+            state.showOverlayPhotoViewport = showPhotoViewPort
             state.selectedPhoto = index
             state.selectedContactId = contactId
             state.selectedContact = contactValue
-        },
-        currentUserDataAC(state, action) {
-            const {
-                name, about, applicant,
-                description, github, vk, facebook, instagram, twitter, site, youtube, link
-            } = action.payload
-            state.name = name
-            state.about = about
-            state.applicant = applicant
-            state.description = description
-            state.github = github
-            state.vk = vk
-            state.facebook = facebook
-            state.instagram = instagram
-            state.twitter = twitter
-            state.site = site
-            state.youtube = youtube
-            state.link = link
         },
     },
 })
 
 export default profileSlice.reducer
 export const {
-    dataReceivedAC,
-    showOverlayAC,
-    notFoundAC,
-    avatarAC,
-    changeCurrentContactDataAC,
-    currentUserDataAC,
-    resultAC,
+    toggleAboutDataFetch,
+    toggleStatusDataFetch,
+    toggleStatusDataUploadStatus,
+    toggleNameDataFetch,
+    toggleJobDescriptionDataFetch,
+    toggleIsLookingForAJobDataFetch,
+    toggleNameDataUploadStatus,
+    toggleAboutDataUploadStatus,
+    toggleJobDescriptionDataUploadStatus,
+    toggleIsLookingForAJobDataUploadStatus,
+    toggleOverlay,
+    toggleUserDataUploadStatus,
+    setCurrentUserAvatar,
+    toggleProfileDataUpdateStatus,
+    setSelectedContactData,
     setUserProfile,
-    statusErrorAC,
-    statusAC,
+    setStatus,
     changeContactValue,
-    photoAC
+    changeUserAvatar,
+    toggleUserDataFetch,
+    toggleIsCurrentProfileFollowed,
+    toggleProfilePageNotFound,
 } = profileSlice.actions
 
 //THUNKS
-
-
-export const setUserTC = createAsyncThunk('set-user-thunk', async (userId, {dispatch}) => {
-    try {
-        debugger
-        await dispatch(personalDataFetchingAC(true))
-        const data = await apiCaller.setUsers(userId)
-        dispatch(setUserProfile({profile: data}))
-        dispatch(notFoundAC(false))
-        dispatch(personalDataFetchingAC(false))
-    } catch (error) {
-        dispatch(notFoundAC(true))
+export const setUserThunk = createAsyncThunk('set-user-thunk', async ({
+                                                                          userId,
+                                                                          friends,
+                                                                          profilePageNotFound
+                                                                      }, {dispatch}) => {
+    profilePageNotFound === true && dispatch(toggleProfilePageNotFound(false))
+    dispatch(toggleUserDataFetch(true))
+    dispatch(toggleProfileDataUpdateStatus(false))
+    const userData = await apiCaller.setUsers(userId)
+    if (userData.status === 200) {
+        dispatch(setUserProfile({profile: userData.data, friends}))
+        if (data.userId === userId) {
+            localStorage.setItem("userId", userId)
+        }
+    } else {
+        dispatch(toggleProfilePageNotFound(true))
     }
+    dispatch(toggleUserDataFetch(false))
 })
 
-export const getStatusTC = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
-    dispatch(statusDataFetchingAC(true))
+export const setStatusThunk = createAsyncThunk('get-status-thunk', async (userId, {dispatch}) => {
     const response = await profileApi.getStatus(userId)
-    dispatch(statusAC(response.data))
-    dispatch(statusDataFetchingAC(false))
+    dispatch(setStatus(response.data))
 })
 
-export const updateStatusTC = createAsyncThunk('updateStatus-thunk', async (status, {dispatch}) => {
-    dispatch(statusDataFetchingAC(true))
+export const updateStatusThunk = createAsyncThunk('updateStatus-thunk', async (status, {dispatch}) => {
+    dispatch(toggleStatusDataFetch(true))
     const data = await profileApi.updateStatus(status)
     if (data.resultCode === 0) {
-        dispatch(statusAC(status))
-        dispatch(statusErrorAC(false))
-        dispatch(statusDataFetchingAC(false))
+        dispatch(setStatus(status))
+        dispatch(toggleStatusDataUploadStatus(true))
+        await delay(200)
+        dispatch(toggleStatusDataUploadStatus(false))
     } else {
-        dispatch(statusErrorAC(true))
-        setTimeout(() => {
-            dispatch(statusErrorAC(false))
-        }, 3000)
-        dispatch(statusDataFetchingAC(false))
+        console.log('status error')
     }
+    dispatch(toggleStatusDataFetch(false))
 })
 
-export const setCurrentUserDataTC = createAsyncThunk('set-current-user-data-thunk', async (userId, {dispatch}) => {
-    const data = await apiCaller.setUsers(userId)
-    dispatch(currentUserDataAC(data.fullName, data.aboutMe, data.lookingForAJob, data.lookingForAJobDescription,
-        data.contacts.github, data.contacts.vk, data.contacts.facebook, data.contacts.instagram, data.contacts.twitter,
-        data.contacts.website, data.contacts.youtube, data.contacts.mainLink))
-    dispatch(dataReceivedAC(true))
+export const setCurrentUserAvatarThunk = createAsyncThunk('set-avatar-thunk', async (userId, {dispatch}) => {
+    const userData = await apiCaller.setUsers(userId)
+    dispatch(setCurrentUserAvatar(userData.data.photos.small))
 })
 
-export const setAvatarTC = createAsyncThunk('set-avatar-thunk', async (userId, {dispatch}) => {
-    dispatch(avatarDataFetchingAC(true))
-    const data = await apiCaller.setUsers(userId)
-    dispatch(avatarAC(data.photos.small))
-    dispatch(avatarDataFetchingAC(false))
-})
-
-export const updatePhotoTC = createAsyncThunk('update-photo-thunk', async (photo, {dispatch}) => {
-    dispatch(avatarDataFetchingAC(true))
+export const updateAvatarThunk = createAsyncThunk('update-photo-thunk', async (photo, {dispatch}) => {
     const response = await profileApi.updatePhoto(photo)
     if (response.data.resultCode === 0) {
-        dispatch(photoAC({photo: response.data.data.photos}))
-        dispatch(avatarAC(response.data.data.photos.small))
-        dispatch(avatarDataFetchingAC(false))
+        dispatch(changeUserAvatar({photo: response.data.data.photos}))
+        dispatch(setCurrentUserAvatar(response.data.data.photos.small))
     }
 })
 
-
-// userid, aboutMe, lookingForAJob,
-//     LookingForAJobDescription, fullName, contacts: {
-//     github, vk, facebook, instagram, twitter,
-//         website, youtube, mainLink
-
-export const updateProfileTC = createAsyncThunk('update-profile-thunk',
+export const updateProfileThunk = createAsyncThunk('update-profile-thunk',
     async ({
                about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
-               website, youtube, mainlink
+               website, youtube, mainlink, fetchData,
            }, {dispatch, getState}) => {
-        debugger
+
         const state = getState();
         const {userId, aboutMe, lookingForAJob, lookingForAJobDescription, fullName} = state.profilePage.profile
         const [facebookState, websiteState, vkState, twitterState, instagramState, youtubeState, githubState, mainlinkState] = state.profilePage.contacts
         const aboutParam = about ? about : aboutMe
-        const isApplicantParam = isApplicant ? isApplicant : lookingForAJob
+        const isApplicantParam = isApplicant !== undefined ? isApplicant : lookingForAJob
         const descriptionParam = description ? description : lookingForAJobDescription
         const fullNameParam = name ? name : fullName
         const githubParam = github ? github : githubState.value
@@ -235,52 +240,83 @@ export const updateProfileTC = createAsyncThunk('update-profile-thunk',
         const mainLinkParam = mainlink ? mainlink : mainlinkState.value
         const youtubeParam = youtube ? youtube : youtubeState.value
         const twitterParam = twitter ? twitter : twitterState.value
+        switch (fetchData) {
+            case nameData:
+                dispatch(toggleNameDataFetch(true))
+                break;
+            case aboutData:
+                dispatch(toggleAboutDataFetch(true))
+                break
+            case isLookingForAJobData:
+                dispatch(toggleIsLookingForAJobDataFetch(true))
+                break;
+            case lookingForAJobDataInfo:
+                dispatch(toggleJobDescriptionDataFetch(true))
+                break;
+            default:
+                dispatch(toggleUserDataFetch(true))
+                break;
+        }
         const response = await profileApi.updateProfile(userId, aboutParam, isApplicantParam, descriptionParam,
             fullNameParam, githubParam, vkParam, facebookParam, instagramParam, twitterParam,
             websiteParam, youtubeParam, mainLinkParam)
-        debugger
+
         if (response.data.resultCode === 0) {
-            dispatch(resultAC('success'))
-            debugger
-            setTimeout(() => {
-                dispatch(resultAC(null))
-            }, 2000)
+            switch (fetchData) {
+                case aboutData:
+                    dispatch(toggleAboutDataUploadStatus(true))
+                    dispatch(toggleAboutDataFetch(false))
+                    await delay(200)
+                    dispatch(toggleAboutDataUploadStatus(false))
+                    break;
+                case nameData:
+                    dispatch(toggleNameDataUploadStatus(true))
+                    dispatch(toggleNameDataFetch(false))
+                    await delay(200)
+                    dispatch(toggleNameDataUploadStatus(false))
+                    break;
+                case isLookingForAJobData:
+                    dispatch(toggleIsLookingForAJobDataUploadStatus(true))
+                    dispatch(toggleIsLookingForAJobDataFetch(false))
+                    await delay(200)
+                    dispatch(toggleIsLookingForAJobDataUploadStatus(false))
+                    break;
+                case lookingForAJobDataInfo:
+                    dispatch(toggleJobDescriptionDataUploadStatus(true))
+                    dispatch(toggleIsLookingForAJobDataFetch(false))
+                    await delay(200)
+                    dispatch(toggleJobDescriptionDataUploadStatus(false))
+                    break;
+                default:
+                    dispatch(toggleUserDataUploadStatus(true))
+                    dispatch(toggleUserDataFetch(false))
+                    await delay(1000)
+                    dispatch(toggleUserDataUploadStatus(false))
+                    break;
+            }
+            dispatch(toggleProfileDataUpdateStatus(true))
         } else {
-            dispatch(resultAC('error'))
-            setTimeout(() => {
-                dispatch(resultAC(null))
-            }, 2000)
+            console.log('error')
+        }
+        switch (fetchData) {
+            case nameData:
+                dispatch(toggleNameDataFetch(false))
+                break;
+            case isLookingForAJobData:
+                dispatch(toggleIsLookingForAJobDataFetch(false))
+                break;
+            case lookingForAJobDataInfo:
+                dispatch(toggleJobDescriptionDataFetch(false))
+                break;
+            case aboutData:
+                dispatch(toggleAboutDataFetch(false))
+                break;
+            default:
+                dispatch(toggleUserDataFetch(false))
+                break;
         }
     }
 )
-
-
-// export const updateProfileTC = createAsyncThunk('update-profile-thunk',
-//     async ({
-//                userId, about, isApplicant, description, name, github, vk, facebook, instagram, twitter,
-//                website, youtube, mainlink
-//            }, {dispatch, getState}) => {
-//         const state = getState();
-//         const profileState = state.profilePage;
-//         const profile = profileState.profile
-//         const contacts = profileState.contacts
-//         const response = await profileApi.updateProfile(userId, about, isApplicant, description,
-//             name, github, vk, facebook, instagram, twitter,
-//             website, youtube, mainlink)
-//         if (response.data.resultCode === 0) {
-//             dispatch(resultAC('success'))
-//             debugger
-//             setTimeout(() => {
-//                 dispatch(resultAC(null))
-//             }, 2000)
-//         } else {
-//             dispatch(resultAC('error'))
-//             setTimeout(() => {
-//                 dispatch(resultAC(null))
-//             }, 2000)
-//         }
-//     }
-// )
 
 
 

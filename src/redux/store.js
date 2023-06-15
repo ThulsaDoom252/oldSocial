@@ -4,13 +4,11 @@ import appSlice from "./appSlice";
 import dialogsReducer from "./dialogsSlice";
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import profileSlice from "./profile/profileSlice";
-import commonSlice from "./commonSlice";
 import settingsSlice from "./settingsSlice";
 
 const reducer = combineReducers({
     profilePage: profileSlice,
     app: appSlice,
-    common: commonSlice,
     usersPage: usersReducer,
     dialogsPage: dialogsReducer,
     auth: authReducer,

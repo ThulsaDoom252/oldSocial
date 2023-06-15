@@ -1,124 +1,63 @@
-import React, {useEffect, useState} from 'react';
-import {useFormik} from "formik";
-import {fetchUiSpin} from "../../../redux/commonSlice";
+import React from 'react';
+import {fetchUiSpin, lookingForAJobDataInfo} from "../../../common/commonData";
 
-const ProfileData = ({
-                         0: {
-                             userId,
-                             fullName,
-                             aboutMe,
-                             lookingForAJob: applicant,
-                             lookingForAJobDescription: description,
-                             contacts
-                         },
-                         1: isCurrentUser,
-                         2: updateProfile,
-                         3: directEditMode,
-                         4: fetchPersonalData,
-                     }) => {
-    const [applicantHook, setApplicantHook] = useState(null)
-    const [descriptionEditMode, setDescriptionEditMode] = useState(false)
-    const [aboutEditMode, setAboutEditMode] = useState(false)
-    const formik = useFormik({
-        initialValues: {
-            applicantDescription: description,
-            about: aboutMe,
-        },
-
-    })
-
-    const {values, errors, handleChange} = formik
-
-    useEffect(() => {
-        formik.setFieldValue("applicantDescription", description)
-        formik.setFieldValue("about", aboutMe)
-        setApplicantHook(!!applicant)
-    }, [applicant, description, aboutMe])
-
-    const directEditRef = isCurrentUser && directEditMode
-
-    const toggleEditMode = (editMode, setEditMode) => {
-        if (isCurrentUser && !editMode && directEditMode) {
-            setEditMode(true)
-        } else if (editMode && !errors.description) {
-            setEditMode(false)
-            handleUpdateProfile()
-        }
-    }
-
-    const handleUpdateProfile = (applicant = applicantHook) => {
-        updateProfile({
-            userId, about: values.about,
-            isApplicant: applicant, description: values.applicantDescription,
-            name: fullName, github: contacts.github,
-            vk: contacts.vk, facebook: contacts.facebook,
-            instagram: contacts.instagram, twitter: contacts.twitter,
-            website: contacts.website,
-            youtube: contacts.youtube, mainlink: contacts.mainlink
-        })
-    }
-
-    const applicantRelay = () => applicantHook ? setApplicantHook(false) : setApplicantHook(true)
-
-    const applicantUpdate = () => {
-        applicantRelay()
-        if (!applicantHook) {
-            handleUpdateProfile(true)
-        } else {
-            handleUpdateProfile(false)
-        }
-    }
-
-    useEffect(() => {
-        console.log(applicantHook)
-    }, [applicantHook])
-
-    //Func Refs
-    const directEditFunc = isCurrentUser && directEditMode
-
-
-    // STYLES REFS
-    const descriptionBlockStyle = {
-        "border": errors.applicantDescription ? "solid red" : descriptionEditMode && !errors.applicantDescription ? "solid yellow" : null
-    }
-    const aboutBlockStyle = {
-        "border": errors.about ? "solid red" : aboutEditMode && !errors.about ? "solid yellow" : null
-    }
-    const pointerCursor = {
-        cursor: directEditFunc && isCurrentUser ? "pointer" : "default",
-    }
+const ProfileData = ({isCurrentUser, profileDataProps}) => {
+    const [handleChange, values, errors, toggleProfileEditMode,
+        descriptionEditMode, setDescriptionEditMode, centerProfileAboutEditMode, setCenterProfileAboutEditMode,
+        directEditFunc, jobDescriptionStyle, pointerCursor,
+        aboutBlockStyle, isLookingForAJobDataFetch, isLookingForAJobDataUploadStatus, jobDescriptionDataFetch, jobDescriptionDataUploadStatus,
+        handleChangeIsLookingForAJobInfo
+    ] = profileDataProps
 
     return (
         <div>
             <div style={pointerCursor}
-                 className={"user-data-block"}
-                 onClick={() => directEditFunc && applicantUpdate()}
-            >
-                {fetchPersonalData ? fetchUiSpin : applicantHook && isCurrentUser ? "You are looking for a job" : applicantHook && !isCurrentUser ? "Looking for a job" : "Not looking for a job"}
+                 className={`user-data-block ${isLookingForAJobDataUploadStatus && "user-data-block-uploaded"}`}
+                 onClick={() => directEditFunc && handleChangeIsLookingForAJobInfo(!values.lookingForAJob)}>
+                {isLookingForAJobDataFetch ? fetchUiSpin : values.lookingForAJob && isCurrentUser ? "You are looking for a job" : values.lookingForAJob && !isCurrentUser ? "Looking for a job" : "Not looking for a job"}
             </div>
             <div
-                style={descriptionBlockStyle}
-                className={"user-data-block"}>
-                {fetchPersonalData ? fetchUiSpin : descriptionEditMode ?
+                style={jobDescriptionStyle}
+                className={`user-data-block ${jobDescriptionDataUploadStatus && "user-data-block-uploaded"}`}>
+                {descriptionEditMode ?
                     <input id={"applicantDescription"} className={"job-description-input"}
                            onChange={handleChange}
-                           onBlur={() => toggleEditMode(descriptionEditMode, setDescriptionEditMode)} autoFocus={true}
+                           onBlur={() => toggleProfileEditMode(descriptionEditMode, setDescriptionEditMode, lookingForAJobDataInfo)}
+                           autoFocus={true}
                            type="text" value={values.applicantDescription}/> :
                     <p style={pointerCursor} className={"job-description"}
-                       onClick={() => toggleEditMode(descriptionEditMode, setDescriptionEditMode)}>{values.applicantDescription ? values.applicantDescription : "No info about job/skills"}</p>}
+                       onClick={() => toggleProfileEditMode(descriptionEditMode, setDescriptionEditMode)}>{jobDescriptionDataFetch ? fetchUiSpin : values.applicantDescription ? values.applicantDescription : "No info about job/skills"}</p>}
             </div>
             {errors.applicantDescription && <p className={"profile-page-input-error"}>{errors.applicantDescription}</p>}
             <div style={aboutBlockStyle} className={"user-data-block-about"}>
-                {fetchPersonalData ? fetchUiSpin : aboutEditMode ?
+                {centerProfileAboutEditMode ?
                     <input id={"about"} className={"about-description-input"} onChange={handleChange}
-                           onBlur={() => toggleEditMode(aboutEditMode, setAboutEditMode)} autoFocus={true}
+                           onBlur={() => toggleProfileEditMode(centerProfileAboutEditMode, setCenterProfileAboutEditMode)}
+                           autoFocus={true}
                            type="text" value={values.about}/> :
                     <p className={"job-description"}
-                       onClick={() => toggleEditMode(aboutEditMode, setAboutEditMode)}>{values.about ? values.about : "No info"}</p>}</div>
+                       onClick={() => toggleProfileEditMode(centerProfileAboutEditMode, setCenterProfileAboutEditMode)}>{values.about ? values.about : "No info"}</p>}</div>
             {errors.about && <p className={"profile-page-input-error"}>{errors.about}</p>}
         </div>
-
     )
 }
 
 export default ProfileData;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

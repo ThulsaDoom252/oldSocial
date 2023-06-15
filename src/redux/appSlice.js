@@ -1,11 +1,15 @@
-import {loginTC} from "./authSlice";
+import {getAuthDataThunk} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {setStatusThunk, setUserThunk} from "./profile/profileSlice";
+import {initializeOptionsThunk} from "./settingsSlice";
+import {apiCaller} from "../api/api";
+import {getFriends} from "./userSlice";
 
 const appSlice = createSlice({
     name: 'app-slice',
     initialState: {
         initialized: false,
-        hideNonFunctionalPages: false,
+        profileInitialized: false,
         nightMode: false,
         nightModeColors: {
             "sidebar/header-background": "#0B18DCFF",
@@ -27,30 +31,45 @@ const appSlice = createSlice({
         },
     },
     reducers: {
-        initializeAC(state) {
-            state.initialized = true
+        initializeApp(state, action) {
+            state.initialized = action.payload
         },
-        toggleNonFunctionalPages(state, action) {
-            state.hideNonFunctionalPages = action.payload
-        },
+        initializeProfile(state, action) {
+            state.profileInitialized = action.payload
+        }
     },
 })
 
 export default appSlice.reducer
-export const {initializeAC} = appSlice.actions
+export const {initializeApp, initializeProfile} = appSlice.actions
 
 //THUNKS
-export const initializeTC = createAsyncThunk('initializing-thunk',
+export const initializeAppThunk = createAsyncThunk('initializing-thunk',
     async (_, {dispatch}) => {
-        debugger
-        try {
-            const promise = dispatch(loginTC())
-            Promise.all([promise]).then(() => {
-                dispatch(initializeAC())
-            })
-        } catch (error) {
-            console.log(error)
-        }
+        dispatch(initializeApp(false))
+        const initializeAuthData = await dispatch(getAuthDataThunk())
+        const initializeOptions = await dispatch(initializeOptionsThunk())
+        Promise.all([initializeAuthData, initializeOptions]).then(() => {
+            dispatch(initializeApp(true))
+        })
 
     })
+
+export const initializeProfileThunk = createAsyncThunk('initialize-profile-thunk', async ({
+                                                                                              userId,
+                                                                                              friendsArray,
+                                                                                              friendsCount,
+                                                                                              profilePageNotFound,
+                                                                                          }, {dispatch}) => {
+        dispatch(initializeProfile(false))
+        const receivedFriendsArray = friendsArray.length === 0 ? await apiCaller.getFriends(friendsCount) : friendsArray
+        const friends = friendsArray.length === 0 ? receivedFriendsArray.items : receivedFriendsArray
+        const initializeUserFriends = dispatch(getFriends(friends))
+        const initializeUserData = dispatch(setUserThunk({userId, friends, profilePageNotFound}))
+        const initializeUserStatus = dispatch(setStatusThunk(userId))
+        Promise.all([initializeUserData, initializeUserStatus, initializeUserFriends]).then(() => {
+            dispatch(initializeProfile(true))
+        })
+
+})
 

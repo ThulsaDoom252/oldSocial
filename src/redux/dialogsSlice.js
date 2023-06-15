@@ -1,12 +1,10 @@
 import {apiCaller} from "../api/api";
-import defaultAvatar from "./common/default-avatar.jfif"
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 //STATE
 const dialogsSlice = createSlice({
     name: 'dialogs-slice',
     initialState: {
-        defaultAvatar: defaultAvatar,
         randomUsers: [],
         underConstruction: true
     },

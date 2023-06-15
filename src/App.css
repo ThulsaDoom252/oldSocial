@@ -100,6 +100,40 @@ input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
 }
 
+
+/*///////////////////Animations */
+/*LOGIN ANIMATION*/
+@keyframes loginAppear {
+    0% {
+        opacity: 0;
+        margin-bottom: 50px;
+    }
+
+    100% {
+        opacity: 1;
+        margin-bottom: 0;
+    }
+}
+
+@keyframes loginBlockAppear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes loading {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: -100% 50%;
+    }
+}
+
 /*MAIN CONTAINERS*/
 .wrapper {
     width: 1100px;
@@ -247,8 +281,12 @@ input:-webkit-autofill:active {
     align-items: center;
 }
 
-.header-current-user-avatar {
-    max-width: 40%;
+.header-current-avatar-item {
+    width: 100px;
+}
+
+.header-current-avatar {
+    width: 100%;
     border-radius: 50px;
 }
 
@@ -357,7 +395,7 @@ input:-webkit-autofill:active {
 }
 
 /*LEFT PART*/
-.login-page-wallpaper {
+.login-left-part-container {
     background: url("https://elitex.systems/blog/wp-content/uploads/2021/04/react-advantage-1024x683.jpg");
     width: 60%;
     background-position-x: -120px;
@@ -377,7 +415,7 @@ input:-webkit-autofill:active {
     height: 75%;
 }
 
-.login-page-left-part-slogan-block {
+.slogan-block {
     width: 29%;
     font-weight: bold;
     font-size: 0.95rem;
@@ -387,68 +425,44 @@ input:-webkit-autofill:active {
     background: rgb(172, 151, 151, 0.1);
 }
 
-.login-page-left-part-line {
+.slogan-line {
     background-color: white;
     margin-top: 4%;
     width: 50px;
     height: 2px;
 }
 
-/*LOGIN ANIMATION*/
-
-@keyframes loginAppear {
-    0% {
-        opacity: 0;
-        margin-bottom: 50px;
-    }
-
-    100% {
-        opacity: 1;
-        margin-bottom: 0;
-    }
-}
-
-@keyframes loginBlockAppear {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-.login-page-left-part-content {
+.left-part-content {
     margin-top: 5%;
 }
 
-.login-page-left-part-content-first-line {
+.content-first-line {
     font-size: 1.2rem;
     font-weight: bold;
 }
 
-.login-page-left-part-content-second-line {
+.content-second-line {
     padding: 2% 0 5% 0;
     font-size: 1.6rem;
 }
 
-.login-page-left-part-content-last-line {
+.left-part-last-line {
     padding: 5% 0 0 0;
 }
 
-.login-page-left-part-signUp-block {
+.left-part-signUp-block {
     margin-top: 25%;
 }
 
-.login-page-left-part-content-signIn-button {
+.left-part-sign-btn {
     transition: 0.5s;
 }
 
-.login-page-left-part-content-signIn-button:hover {
+.left-part-sign-btn:hover {
     cursor: pointer;
 }
 
-.login-page-left-part-content-signIn-button:disabled {
+.left-part-sign-btn:disabled {
     transition: 0.5s;
     color: gray;
     cursor: wait;
@@ -468,8 +482,8 @@ input:-webkit-autofill:active {
     animation: loginBlockAppear 500ms forwards;
 }
 
-.login-page-right-part-signUp-label {
-    background-image: url("./components/Login/Back-1.png");
+.signUp-label {
+    background-image: url("components/Auth/signUp-logo.png");
     background-repeat: no-repeat;
     background-size: 50%;
     background-position-x: 140px;
@@ -483,7 +497,7 @@ input:-webkit-autofill:active {
     height: 250px;
 }
 
-.login-page-right-part-signUp-link {
+.signUp-link {
     margin: 30% 15% auto auto;
     display: flex;
     border-radius: 4px;
@@ -506,10 +520,15 @@ input:-webkit-autofill:active {
     cursor: pointer;
 }
 
-/*SIGN IN BLOCK*/
-.login-page-right-part-signIn-block {
+SIGN IN BLOCK
+.signIn-form {
+    display: table;
+    background-color: red;
+}
+
+.signIn-container {
     transition: 2ms;
-    background-image: url("./components/Login/SignIn-logo.png");
+    background-image: url("components/Auth/desktop-signIn-logo.png");
     background-size: 420px;
     background-repeat: no-repeat;
     background-position-x: 120px;
@@ -521,20 +540,19 @@ input:-webkit-autofill:active {
     align-items: center;
     justify-content: center;
     animation: loginBlockAppear 500ms forwards;
-
 }
 
-.login-page-welcome-label {
+.signIn-title {
     font-size: 1.8rem;
 }
 
-.login-page-signIn-label {
+.signIn-label {
     margin-top: 40px;
     font-size: 1.5rem;
     font-family: "Fira Sans";
 }
 
-.login-page-input-container {
+.signIn-inputs-container {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -543,13 +561,13 @@ input:-webkit-autofill:active {
     margin: 50px auto auto auto;
 }
 
-.login-page-input-error {
+.signIn-input-error {
     bottom: 45px;
-    color: yellow;
+    color: #fff200;
     position: absolute;
 }
 
-.login-page-inputs, .login-page-captcha-input {
+.signIn-input, .signIn-captcha-input {
     width: 78%;
     text-align: center;
     font-family: Teko;
@@ -561,26 +579,34 @@ input:-webkit-autofill:active {
     border-width: thin;
 }
 
-
-.login-page-captcha-block {
+.signIn-captcha-block {
+    position: relative;
     margin-top: 20px;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-
 }
 
-.login-page-rememberMe-container {
+.signIn-captcha-input {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 30px;
+}
+
+.rememberMe-container {
     font-size: 1rem;
-    margin: 30px auto auto auto;
+    margin: 15px auto auto auto;
     font-family: "Fira Sans";
     letter-spacing: 1px
 }
 
-.login-page-login-button-container {
+.signIn-btn-container {
     position: relative;
+    margin: 40px auto auto auto;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -599,34 +625,26 @@ input:-webkit-autofill:active {
 }
 
 
-.login-page-login-button {
-    margin: 25px auto auto auto;
+.signIn-btn, .signIn-btn-error {
     background-color: #3f3c3c;
     color: rgba(255, 255, 255, 0.74);
-    border-radius: 5px;
+    border-radius: 10px;
     height: 40px;
     width: 250px;
     font-weight: 900;
     transition: 0.5s;
 }
 
-/*.login-page-login-button:disabled {*/
-/*    background-color: #ffffff;*/
-/*    color: #171515;*/
-/*    border: solid black 1px;*/
-/*}*/
+.signIn-btn-error {
+    border: solid 4px red;
+}
 
-.login-page-login-button:hover {
+
+.signIn-btn:hover, signIn-btn-error:hover {
     transition: 0.1s;
     color: #ffffff;
     border: solid #ee803d 4px;
     cursor: pointer;
-}
-
-.login-page-auth-error {
-    top: 79px;
-    color: red;
-    position: absolute;
 }
 
 .login-page-captcha-error {
@@ -634,6 +652,13 @@ input:-webkit-autofill:active {
     top: 65px;
     color: red;
 }
+
+.signIn-auth-error {
+    top: 40px;
+    color: red;
+    position: absolute;
+}
+
 
 /*UNDER CONSTRUCTION*/
 .under-construction-container {
@@ -671,26 +696,26 @@ input:-webkit-autofill:active {
     margin: 15px auto auto auto;
 }
 
-.friends-flex-block {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-
 .friends-grid-block {
     display: grid;
+    width: 100%;
     grid-template-columns: 20% 20% 20% 20% 20%;
     margin: 20px auto auto auto;
-    height: calc(100% - 50px);
 }
 
 .friend-block {
+    margin-top: 5px;
     display: flex;
     flex-direction: column;
     width: 80%;
     font-weight: 2;
     font-size: 1.2rem;
+}
+
+.friend-avatar {
+    cursor: pointer;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .friend-data-block {
@@ -702,17 +727,7 @@ input:-webkit-autofill:active {
     border-right: solid gray thin;
 }
 
-.friend-avatar {
-    cursor: pointer;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.friend-name {
-    text-decoration: underline;
-}
-
-.friend-name, .friend-status, .friend-button {
+.friend-status, .friend-button {
     margin: 4px;
     word-wrap: break-word;
 }
@@ -745,7 +760,15 @@ input:-webkit-autofill:active {
 }
 
 .message-page-right-part {
+    position: relative;
     width: 75%;
+}
+
+.page-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .new-message-block {
@@ -918,7 +941,6 @@ input:-webkit-autofill:active {
     left: 0;
     min-height: 200px;
     padding: 10px;
-
 }
 
 .profile-page-left-part-userData {
@@ -932,8 +954,15 @@ input:-webkit-autofill:active {
 }
 
 .profile-page-left-part-label {
+    display: flex;
+    align-items: center;
     font-weight: bold;
     font-family: "Open Sans";
+}
+
+.edit-data-icon {
+    position: relative;
+    left: 5px;
 }
 
 .profile-page-left-part-about-block {
@@ -1031,13 +1060,17 @@ input:-webkit-autofill:active {
 }
 
 .profile-page-right-unfollow-button {
-    background-color: #3f3c3c;
+    background-color: #35a9fa;
     position: relative;
     padding: 3px;
     font-family: "Open Sans";
     border-radius: 5px;
     left: 3px;
     color: #ffffff;
+}
+
+.profile-page-right-unfollow-button:disabled {
+    background-color: rgba(5, 206, 255, 0.5);
 }
 
 
@@ -1149,12 +1182,19 @@ input:-webkit-autofill:active {
     word-wrap: break-word;
 }
 
+.user-data-block-uploaded {
+    background-color: rgba(0, 255, 247, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
+}
+
 .user-data-block-about {
     display: none;
 }
 
 .job-description-input {
     width: 100%;
+    height: max-content;
     word-wrap: break-word;
 }
 
@@ -1195,6 +1235,10 @@ input:-webkit-autofill:active {
     padding: 0 40px 0 40px;
     font-family: "Open Sans";
     font-size: 1.1rem;
+}
+
+.profile-page-navBar-item:disabled {
+    color: gray;
 }
 
 .profile-page-navBar-item:hover {
@@ -1299,10 +1343,38 @@ input:-webkit-autofill:active {
     margin: 10px auto;
 }
 
-.profile-page-left-part-name {
+.profile-follow-btn, .profile-follow-btn:disabled {
+    margin-top: 10px;
+    background-color: #42b7dc;
+    color: white;
+    height: 30px;
+    width: 100px;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.profile-follow-btn:disabled {
+    background-color: rgba(176, 166, 166, 0.5);
+}
+
+.profile-page-userName-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-page-userName, .profile-page-left-part-name-uploaded {
     margin: 10px 0 10px 0;
     letter-spacing: 2px;
     font-size: 1.5rem;
+}
+
+.profile-page-left-part-name-uploaded {
+    background-color: rgba(26, 255, 187, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
 }
 
 .profile-page-avatar {
@@ -1320,6 +1392,12 @@ input:-webkit-autofill:active {
 .profile-page-right-part-photos-block-label {
     font-family: "Open Sans";
     cursor: pointer;
+}
+
+.photos-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .profile-page-right-part-photos-block-label:hover {
@@ -1402,9 +1480,19 @@ input:-webkit-autofill:active {
     word-wrap: break-word;
 }
 
+.status-container-data-uploaded {
+    background-color: rgba(0, 255, 247, 0.5);
+    border-radius: 5px;
+    transition: background-color 150ms ease-out;
+}
+
 .status {
     width: 95%;
     word-wrap: break-word;
+}
+
+.status-input {
+    background-color: white;
 }
 
 /*Overlay*/
@@ -1423,17 +1511,23 @@ input:-webkit-autofill:active {
     background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
 }
 
-.overlay-close-button {
-    cursor: pointer;
-    z-index: 3;
+.overlay-photo-item {
     position: relative;
-    right: -200px;
-    top: -20px;
-    color: red;
+    width: 700px;
 }
 
-.currently-viewing-photo {
-    width: 700px;
+.overlay-photo {
+    width: 100%;
+}
+
+.overlay-close-btn {
+    font-size: 1.5rem;
+    color: white;
+    position: absolute;
+    right: 40px;
+    top: 20px;
+    z-index: 3;
+    cursor: pointer;
 }
 
 .profile-contact-viewport {
@@ -1454,7 +1548,7 @@ input:-webkit-autofill:active {
     text-align: center;
 }
 
-.currently-viewing-contact-button {
+.overlay-contact-update-btn {
     background-color: white;
     border: black solid thin;
     cursor: pointer;
@@ -1499,7 +1593,7 @@ input:-webkit-autofill:active {
 }
 
 .edit-profile-data-part {
-    background: url("./components/Profile/ProfileCenterPart/EditProfile/bg.png") no-repeat;
+    background: url("components/EditProfile/BG.png") no-repeat;
     background-position-x: 170px;
     background-position-y: 110px;
     padding: 10px;
@@ -1529,7 +1623,7 @@ input:-webkit-autofill:active {
 }
 
 .data-name-block, .data-about-block {
-    text-align: center;
+    text-align: left;
 }
 
 
@@ -1537,6 +1631,7 @@ input:-webkit-autofill:active {
     color: red;
     position: relative;
     height: 30px;
+    text-align: center;
 }
 
 .edit-error {
@@ -1556,6 +1651,10 @@ input:-webkit-autofill:active {
     padding: 5px;
     border-radius: 3px;
     border: gray thin solid;
+}
+
+.edit-profile-input-error {
+    border: red solid 2px;
 }
 
 .data-second-block {
@@ -1599,12 +1698,20 @@ input:-webkit-autofill:active {
     margin-right: 10px;
 }
 
-.job-description-label {
-    font-size: 1.1rem;
-    font-weight: 2;
+.submit-btn-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
 }
 
-.edit-profile-page-submit-button {
+.submit-btn-status {
+    position: absolute;
+    color: green;
+}
+
+.edit-profile-page-submit-btn {
     margin-top: 110px;
     background-color: #32c5d3;
     cursor: pointer;
@@ -1614,7 +1721,7 @@ input:-webkit-autofill:active {
     height: 35px;
 }
 
-.edit-profile-page-submit-button:active {
+.edit-profile-page-submit-btn :active {
     color: red;
 }
 
@@ -1644,10 +1751,26 @@ input:-webkit-autofill:active {
     text-align: left;
 }
 
-
-.edit-profile-contact-label {
+.data-label, .data-jobDescription-label {
     font-weight: bold;
     font-size: 0.95rem;
+}
+
+.data-jobDescription-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.data-jobDescription-hint {
+    position: relative;
+    left: 5px;
+    font-size: 1rem;
+}
+
+.data-jobDescription-hint:hover {
+    color: #f58502;
+    transition: 0.5ms;
 }
 
 .edit-profile-contact-input {
@@ -1679,12 +1802,11 @@ input:-webkit-autofill:active {
 /********************!*LOGIN-PAGE*!*/
 
 @media only screen and (max-width: 1149px) {
-
     .login-page-right-part-signUp-block {
         display: none;
     }
 
-    .login-page-wallpaper {
+    .login-left-part-container {
         display: none;
     }
 
@@ -1703,30 +1825,32 @@ input:-webkit-autofill:active {
 
     .login-page-right-part-container {
         width: auto;
+        display: table;
+        background: linear-gradient(190deg, #e5ffeb, #badcd2, #bdb1c5, #cbbc92);
+
     }
 
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         display: flex;
         position: relative;
         right: 20px;
         justify-content: center;
-        background-image: url("./components/Login/mobile-logo.png");
+        background-image: url("components/Auth/mobile-signInlogo.png");
         background-size: 300px;
         background-position: 24px 55px;
 
     }
-
 }
 
 @media only screen and (max-width: 392px) {
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         background-position: -10px 55px;
         background-size: 280px;
     }
 }
 
 @media only screen and (max-width: 392px) {
-    .login-page-right-part-signIn-block {
+    .signIn-container {
         background-position: -10px 55px;
         background-size: 260px;
     }
@@ -1771,6 +1895,10 @@ input:-webkit-autofill:active {
 
     .mobile-gallery-block {
         width: 90% !important;
+    }
+
+    .users-page-user-block {
+        width: 120px !important;
     }
 
     /*MESSAGES*/
@@ -1883,6 +2011,10 @@ input:-webkit-autofill:active {
         background-position: 112px center;
     }
 
+    .users-page-user-block {
+        width: 100px !important;
+    }
+
     .message-page-container {
         width: 100% !important;
     }
@@ -1903,6 +2035,10 @@ input:-webkit-autofill:active {
 
     .edit-profile-mobile-contact-input {
         width: 27%;
+    }
+
+    .users-page-user-block {
+        width: 90%;
     }
 }
 
@@ -1948,6 +2084,7 @@ input:-webkit-autofill:active {
 
 .paginator-page-number:hover, .paginator-selected-page:hover {
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .paginator-selected-page {
@@ -2014,6 +2151,17 @@ input:-webkit-autofill:active {
     display: grid;
     grid-template-columns: 50% 50%;
     padding: 20px;
+}
+
+.settings-block-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-block-info {
+    position: relative;
+    right: 10px;
 }
 
 
@@ -2139,13 +2287,15 @@ input:-webkit-autofill:active {
 /***********************************************USERS*********************************************/
 .users-page-container {
     margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     border-radius: 5px;
     font-family: "Open Sans";
     min-height: 400px;
     background-color: #d2c4c4;
     padding: 20px;
     overflow-y: scroll;
-
 }
 
 .users-page-title {
@@ -2156,6 +2306,7 @@ input:-webkit-autofill:active {
 
 .users-page-users-grid {
     display: grid;
+    width: 100%;
     height: 622px;
     max-height: fit-content;
     margin: 40px auto auto auto;
@@ -2168,10 +2319,15 @@ input:-webkit-autofill:active {
     font-size: 1.2rem;
     flex-direction: column;
     align-items: center;
+    width: 150px;
+}
+
+.users-page-avatar-small-item {
+    width: 100%;
 }
 
 .users-page-avatar-small {
-    width: 120px;
+    width: 100%;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
@@ -2179,7 +2335,7 @@ input:-webkit-autofill:active {
 .users-data-block {
     position: relative;
     top: -5px;
-    width: 121px;
+    width: 100%;
     background-color: white;
     border-left: gray thin solid;
     border-right: gray thin solid;
@@ -2206,6 +2362,10 @@ input:-webkit-autofill:active {
     border-radius: 5px;
     color: white;
     cursor: pointer;
+}
+
+.users-page-follow-button:disabled {
+    background-color: rgba(222, 191, 191, 0.5);
 }
 
 @media (max-width: 528px) {

@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 const settingsSlice = createSlice({
     name: 'settings-slice',
@@ -6,35 +6,37 @@ const settingsSlice = createSlice({
         nightMode: false,
         directEditMode: true,
         showFakeModules: true,
-        hideProfileWall: false,
         showMobileVersion: false,
-        hideEmail: false,
     },
     reducers: {
-        toggleNightModeAC(state, action) {
+        toggleNightMode(state, action) {
             state.nightMode = action.payload
+            localStorage.setItem("nightMode", state.nightMode)
         },
-        directEditModeAC(state, action) {
+        toggleDirectEditMode(state, action) {
             state.directEditMode = action.payload
+            localStorage.setItem("directEditMode", state.directEditMode)
         },
-        toggleWallAC(state, action) {
-            state.hideProfileWall = action.payload
-        },
-        toggleMobileVersionAC(state, action) {
+        toggleMobileVersion(state, action) {
             state.showMobileVersion = action.payload
-        },
-        toggleEmailAC(state, action) {
-            state.hideEmail = action.payload
+            localStorage.setItem("showMobileLayout", state.showMobileVersion)
         },
     }
+})
 
+
+export const initializeOptionsThunk = createAsyncThunk("settings-initializing-thunk", (_, {dispatch}) => {
+    const isNightMode = localStorage.getItem("nightMode")
+    const isDirectEditMode = localStorage.getItem("directEditMode")
+    const isMobileVersion = localStorage.getItem("showMobileLayout")
+    dispatch(toggleDirectEditMode(isDirectEditMode === "true"))
+    dispatch(toggleNightMode(isNightMode === "true"))
+    dispatch(toggleMobileVersion(isMobileVersion === "true"))
 })
 
 export default settingsSlice.reducer
 export const {
-    toggleNightModeAC,
-    toggleWallAC,
-    directEditModeAC,
-    toggleEmailAC,
-    toggleMobileVersionAC
+    toggleNightMode,
+    toggleDirectEditMode,
+    toggleMobileVersion
 } = settingsSlice.actions

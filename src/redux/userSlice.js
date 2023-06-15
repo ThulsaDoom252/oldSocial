@@ -1,106 +1,118 @@
 import {apiCaller} from "../api/api";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
-Array.prototype.remove = function (value) {
-    this.splice(this.indexOf(value), 1);
-}
-
 const usersSlice = createSlice({
     name: 'users-slice',
     initialState: {
         users: [],
+        usersPerPage: 10,
         friends: [],
         pageSize: 10,
         totalCount: 19607,
         currentPage: 2,
         fetchUsers: false,
-        followingProgress: [],
+        followUserFetch: null,
+        friendsCount: 100,
     },
     reducers: {
-        follow(state, action) {
-            state.users = state.users.map(user => user.id === action.payload ? {...user, isFollow: true} : user)
+        followUser(state, action) {
+            state.users = state.users.map(user => user.id === action.payload ? {...user, followed: true} : user)
         },
-        unFollow(state, action) {
-            state.users = state.users.map(user => user.id === action.payload ? {...user, isFollow: false} : user)
+        unFollowUser(state, action) {
+            state.users = state.users.map(user => user.id === action.payload ? {...user, followed: false} : user)
         },
-        getFriendsAC(state, action) {
+        setUsersTotalCount(state, action) {
+            state.totalCount = action.payload
+        },
+        getFriends(state, action) {
             state.friends = [...action.payload]
         },
-        unFollowFriendAC(state, action) {
+        addFriend(state, action) {
+            const {userId, userData} = action.payload
+            let friend
+            if (userData) {
+                friend = userData
+            } else {
+                friend = state.users.find(user => user.id === userId)
+            }
+            state.friends = [...state.friends, friend]
+        },
+        unFollowFriend(state, action) {
             state.friends = state.friends.filter(friend => friend.id !== action.payload)
         },
-        setUsers(state, action) {
+        getUsers(state, action) {
             state.users = [...action.payload]
         },
         setCurrentPage(state, action) {
             state.currentPage = action.payload
         },
-        fetchingRelay(state, action) {
+        toggleFetchUsers(state, action) {
             state.fetchUsers = action.payload
         },
-        followingProgressRelay(state, action) {
-            debugger
-            const {userid, isFetching} = action.payload
-            debugger
-            state.followingProgress = isFetching ? [...state.followingProgress, userid]
-                : state.followingProgress.filter(id => id !== userid)
+        toggleFollowFetch(state, action) {
+            state.followUserFetch = action.payload
         },
     },
 })
 export default usersSlice.reducer
 
 export const {
-    follow,
-    unFollow,
-    followingProgressRelay,
-    fetchingRelay,
-    getFriendsAC,
-    unFollowFriendAC,
+    followUser,
+    unFollowUser,
+    toggleFollowFetch,
+    toggleFetchUsers,
+    setUsersTotalCount,
+    getFriends,
+    unFollowFriend,
     setCurrentPage,
-    setUsers
+    getUsers,
+    addFriend,
 } = usersSlice.actions
 
-
 //THUNKS
-export const followTC = createAsyncThunk('follow-thunk', async (userid, {dispatch}) => {
-    dispatch(followingProgressRelay({isFetching: true, userid}))
-    const data = await apiCaller.follow(userid)
+export const followUserThunk = createAsyncThunk('follow-thunk', async ({userId, userData}, {dispatch}) => {
+    dispatch(toggleFollowFetch(userId))
+    const data = await apiCaller.follow(userId)
     if (data.resultCode === 0) {
-        dispatch(follow(userid))
+        dispatch(followUser(userId))
+        dispatch(addFriend({userId, userData}))
     }
-    dispatch(followingProgressRelay({isFetching: false, userid}))
+    dispatch(toggleFollowFetch(null))
 })
 
-export const unFollowTC = createAsyncThunk('unfollow-thunk', async (userid, {dispatch}) => {
-    dispatch(followingProgressRelay({isFetching: true, userid}))
-    const data = await apiCaller.unFollow(userid)
+export const unFollowUserThunk = createAsyncThunk('unfollow-thunk', async ({userId, userData}, {dispatch}) => {
+    dispatch(toggleFollowFetch(userId))
+    const data = await apiCaller.unFollow(userId)
     if (data.resultCode === 0) {
-        dispatch(unFollow(userid))
+        dispatch(unFollowUser(userId))
+        dispatch(unFollowFriend(userId))
     }
-    dispatch(followingProgressRelay({isFetching: false, userid}))
+    dispatch(toggleFollowFetch(null))
 })
 
 
-export const getUsersTC = createAsyncThunk('getUsers-thunk', async ({currentPage, pageSize}, {dispatch}) => {
-    dispatch(fetchingRelay(true))
-    const data = await apiCaller.getUsers(currentPage, pageSize)
-    debugger
-    dispatch(fetchingRelay(false))
-    dispatch(setUsers(data.items))
+export const getUsersThunk = createAsyncThunk('getUsers-thunk', async ({currentPage, usersPerPage}, {dispatch}) => {
+    dispatch(toggleFetchUsers(true))
+    const data = await apiCaller.getUsers(currentPage, usersPerPage)
+    dispatch(getUsers(data.items))
+    dispatch(setUsersTotalCount(data.totalCount))
     dispatch(setCurrentPage(currentPage))
+    dispatch(toggleFetchUsers(false))
 
 })
 
-export const getFriendsTC = createAsyncThunk('getFriends-thunk', async (count, {dispatch}) => {
-    dispatch(fetchingRelay(true))
+export const getFriendsThunk = createAsyncThunk('getFriends-thunk', async (count, {dispatch}) => {
+    dispatch(toggleFetchUsers(true))
     const data = await apiCaller.getFriends(count)
-    dispatch(getFriendsAC(data.items))
-    dispatch(fetchingRelay(false))
+    dispatch(getFriends(data.items))
+    dispatch(toggleFetchUsers(false))
 })
 
-export const unfollowFriendTC = createAsyncThunk('unfollow-friend-tc', async ({friendId, index}, {dispatch}) => {
+export const unfollowFriendThunk = createAsyncThunk('unfollow-friend-tc', async ({friendId, index}, {dispatch}) => {
+    dispatch(toggleFollowFetch(friendId))
     await apiCaller.unFollow(friendId)
-    dispatch(unFollowFriendAC(friendId, index))
+    dispatch(unFollowFriend(friendId, index))
+    dispatch(toggleFollowFetch(null))
 })
 
 

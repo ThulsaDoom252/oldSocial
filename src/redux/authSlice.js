@@ -1,9 +1,6 @@
 import {login, loginApi} from "../api/api";
-import {setAvatarTC} from "./profile/profileSlice";
-import {authDataFetchingAC} from "./commonSlice";
+import {setCurrentUserAvatarThunk} from "./profile/profileSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-
-//ACTION CREATORS
 
 const authSlice = createSlice({
     name: 'auth-slice',
@@ -13,87 +10,89 @@ const authSlice = createSlice({
         login: null,
         isLogged: false,
         error: false,
-        captcha: null,
+        captcha: false,
         errorMessage: null,
+        loginFetch: false,
     },
     reducers: {
-        AuthAC(state, action) {
+        setAuthData(state, action) {
             const {id, email, userLogin} = action.payload
             state.id = id
             state.email = email
             state.login = userLogin
         },
-        loggerAC(state, action) {
+        toggleAuthStatus(state, action) {
             state.isLogged = action.payload
+        },
+        toggleAuthFetch(state, action) {
+            state.loginFetch = action.payload
         },
         errorAC(state, action) {
             state.error = action.payload
         },
-        captchaAc(state, action) {
+        toggleCaptcha(state, action) {
             state.captcha = action.payload
         },
-        errorMessageAC(state, action) {
+        setAuthError(state, action) {
             state.errorMessage = action.payload
         },
     }
 })
 
 export default authSlice.reducer
-export const {AuthAC, loggerAC, errorMessageAC, errorAC, captchaAc} = authSlice.actions
+export const {setAuthData, toggleAuthStatus, setAuthError, errorAC, toggleCaptcha, toggleAuthFetch} = authSlice.actions
 
-export const loginTC = createAsyncThunk('login-thunk', async (_, {dispatch}) => {
-    await dispatch(authDataFetchingAC(true))
+export const getAuthDataThunk = createAsyncThunk('login-thunk', async (_, {dispatch}) => {
+    await dispatch(toggleAuthFetch(true))
     const response = await login.auth()
     const {id, email, login: userLogin} = response.data
     const {resultCode} = response
     if (resultCode === 0) {
-        dispatch(AuthAC({id, email, userLogin}))
-        dispatch(loggerAC(true))
+        dispatch(setAuthData({id, email, userLogin}))
+        dispatch(toggleAuthStatus(true))
         dispatch(errorAC(false))
-        dispatch(setAvatarTC(id))
-        setTimeout(() => dispatch(authDataFetchingAC(false)), 500)
+        dispatch(setCurrentUserAvatarThunk(id))
     } else {
-        dispatch(loggerAC(false))
+        dispatch(toggleAuthStatus(false))
     }
+    dispatch(toggleAuthFetch(false))
 })
 
-export const getCaptchaTC = () => {
+export const getCaptchaThunk = () => {
     return async (dispatch) => {
         const response = await loginApi.getCaptcha()
-        dispatch(captchaAc(response.data.url))
+        dispatch(toggleCaptcha(response.data.url))
     }
 }
 
 
-export const mainLoginTC = createAsyncThunk('main-login-thunk', async ({
-                                                                           email,
-                                                                           password,
-                                                                           rememberMe,
-                                                                           antiBotSymbols
-                                                                       }, {dispatch}) => {
-    await dispatch(authDataFetchingAC(true))
-    const data = await loginApi.login(email, password, rememberMe, antiBotSymbols)
+export const loginThunk = createAsyncThunk('main-login-thunk', async ({
+                                                                          email,
+                                                                          password,
+                                                                          rememberMe,
+                                                                          antiBotSymbols
+                                                                      }, {dispatch}) => {
+    await dispatch(toggleAuthFetch(true))
+    const data = await loginApi.logIn(email, password, rememberMe, antiBotSymbols)
     if (data.resultCode === 0) {
-        dispatch(loginTC())
+        dispatch(getAuthDataThunk())
         dispatch(errorAC(false))
-        dispatch(errorMessageAC(null))
-        dispatch(captchaAc(null))
-        dispatch(authDataFetchingAC(false))
+        dispatch(setAuthError(null))
+        dispatch(toggleCaptcha(null))
     } else if (data.resultCode === 1) {
         dispatch(errorAC(true))
-        dispatch(errorMessageAC(data.messages[0]))
-        dispatch(authDataFetchingAC(false))
+        dispatch(setAuthError(data.messages[0]))
     } else if (data.resultCode === 10) {
-        dispatch(getCaptchaTC())
+        dispatch(getCaptchaThunk())
         dispatch(errorAC(true))
-        dispatch(errorMessageAC(data.messages[0]))
-        dispatch(authDataFetchingAC(false))
+        dispatch(setAuthError(data.messages[0]))
     }
+    dispatch(toggleAuthFetch(false))
 })
 
-export const logOutTC = createAsyncThunk('logout-thunk', async (_, {dispatch}) => {
-    const data = await loginApi.logout()
-    data.resultCode === 0 && dispatch(loginTC())
+export const logOutThunk = createAsyncThunk('logout-thunk', async (_, {dispatch}) => {
+    const data = await loginApi.logOut()
+    data.resultCode === 0 && dispatch(getAuthDataThunk())
 
 })
 

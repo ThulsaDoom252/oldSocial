@@ -1,20 +1,15 @@
 import axios from "axios";
 
-let apiKey = localStorage.getItem("apiKey".toString())
-
 export const instance = axios.create({
     withCredentials: true,
     baseURL: 'https://social-network.samuraijs.com/api/1.0/',
-    headers: {
-        "API-KEY": apiKey
-    }
 })
 
 //---------------------------------------------------------------------------USERS API
 export const apiCaller = {
-    getUsers: (currentPage, pageSize, fetching, setUsers) => {
+    getUsers: (currentPage, usersPerPage = 20) => {
         return (
-            instance.get(`users?page=${currentPage}&count=${20}`)
+            instance.get(`users?page=${currentPage}&count=${usersPerPage}`)
                 .then(response => {
                     return response.data
                 })
@@ -35,7 +30,7 @@ export const apiCaller = {
         )
     },
     setUsers: (userId) => {
-        return profileApi.setUsersProfile(userId)
+        return profileApi.getUserProfileData(userId)
     },
     unFollow: (userId) => {
         return (
@@ -58,20 +53,20 @@ export const apiCaller = {
 //---------------------------------------------------------------------------AUTH API
 export const login = {
     auth: () => {
-        return loginApi.auth()
+        return loginApi.checkAuth()
     }
 }
 //---------------------------------------------------------------------------PROFILE API
 export const profileApi = {
-    setUsersProfile: (userId) => {
+    getUserProfileData: (userId) => {
         return (
             instance.get('profile/' + userId)
                 .then(response => {
-                    return response.data
+                    return response
                 })
+                .catch(response => response)
         )
     },
-
 
     getStatus(userId) {
         return instance.get('profile/status/' + userId)
@@ -95,14 +90,6 @@ export const profileApi = {
         })
     },
 
-    // deletePhoto() {
-    //     return instance.delete('profile/photo/', {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
-    //         }
-    //     })
-    // },
-
     updateProfile(userid, aboutMe, lookingForAJob, LookingForAJobDescription,
                   fullName, github, vk, facebook, instagram, twitter,
                   website, youtube, mainLink) {
@@ -114,15 +101,15 @@ export const profileApi = {
                 website, youtube, mainLink
             }
         })
+        debugger
 
     },
 
 }
 
-//---------------------------------------------------------------------------LOGIN API
-
+//**************************LOGIN API***********************************************
 export const loginApi = {
-    auth: () => {
+    checkAuth: () => {
         return instance.get('auth/me').then(response => {
                 return response.data
             }
@@ -134,18 +121,18 @@ export const loginApi = {
 
     },
 
-    login(email, password, rememberMe, antiBotSymbols) {
+    logIn(email, password, rememberMe, antiBotSymbols) {
         return instance.post('auth/login/', {
-            email: email,
-            password: password,
-            rememberMe: rememberMe,
+            email,
+            password,
+            rememberMe,
             captcha: antiBotSymbols
         }).then(response => {
             return response.data
         })
     },
 
-    logout() {
+    logOut() {
         return instance.delete('auth/login/').then(response => {
             return response.data
         })
