@@ -1,8 +1,6 @@
 import React, {useEffect} from "react";
 import './App.css';
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import News from "./components/News";
-import Login from "./components/Auth/Login";
 import {useDispatch, useSelector} from "react-redux";
 import Initialize from "./components/Initialize";
 import {initializeAppThunk} from "./redux/appSlice";
@@ -17,6 +15,7 @@ import OverlayContainer from "./components/Overlay/OverlayContainer";
 import GalleryContainer from "./components/Gallery/GalleryContainer";
 import FriendsContainer from "./components/Friends/FriendsContainer";
 import UsersRelay from "./components/Users/UsersRelay";
+import SignInContainer from "./components/Auth/SignInContainer";
 
 const App = () => {
     const dispatch = useDispatch()
@@ -56,9 +55,8 @@ const App = () => {
                                 <Route path={"/profile/:userId"} element={<ProfileRelay/>}/>
                                 <Route path="/messages" element={<DialogsContainer nightMode={nightMode}/>}/>
                                 <Route path="/gallery" element={<GalleryContainer {...{nightMode, dispatch}}/>}/>
-                                <Route path="" element={<Login/>}/>
+                                <Route path="" element={<SignInContainer/>}/>
                                 <Route path="/users" element={<UsersRelay/>}/>
-                                <Route path="/news" element={<News/>}/>
                                 <Route path="/edit" element={<EditProfileDataRelay/>}/>
                                 <Route path="/settings" element={<SettingsContainer nightMode={nightMode}/>}/>
                                 <Route path={"/friends"} element={<FriendsContainer nightMode={nightMode}/>}/>

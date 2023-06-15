@@ -1,5 +1,5 @@
 import React from 'react';
-import {fetchUsers} from "../../redux/commonSlice";
+import {fetchUsers} from "../../common/commonData";
 
 const UsersTemplate = () => {
     return (

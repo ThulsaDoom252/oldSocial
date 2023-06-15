@@ -1,5 +1,4 @@
 import React from 'react';
-import notFound from "./404.png"
 import trav from "./trav.gif"
 import authHoc from "../HOC/authHoc";
 import {compose} from "redux";
@@ -7,7 +6,7 @@ import {connect} from "react-redux";
 import {NavLink} from "react-router-dom";
 
 const NotFoundPage = (props) => {
-    const {id : currentUser} = props
+    const {id: currentUser} = props
     return (
         <div className="not-found-container">
             <img className="not-found-image" src={trav}/>
@@ -20,7 +19,7 @@ const NotFoundPage = (props) => {
     );
 }
 
-let loginCheck = (state) => {
+const loginCheck = (state) => {
     return {
         auth: state.auth.isLogged,
         id: state.auth.id

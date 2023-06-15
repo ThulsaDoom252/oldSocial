@@ -31,7 +31,15 @@ const OverlayContainer = ({dispatch}) => {
     }
 
     const handleCloseOverlay = () => dispatch(toggleOverlay(false))
-        return <Overlay {...{handleCloseOverlay, photoViewPort, userPhotos, selectedPhoto, selectedContact, handleChangeSelectedContact, handleSubmitData}}/>
+    return <Overlay {...{
+        handleCloseOverlay,
+        photoViewPort,
+        userPhotos,
+        selectedPhoto,
+        selectedContact,
+        handleChangeSelectedContact,
+        handleSubmitData
+    }}/>
 }
 
 export default OverlayContainer

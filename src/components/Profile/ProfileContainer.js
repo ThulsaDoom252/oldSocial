@@ -3,78 +3,79 @@ import ProfileCenterPart from "./ProfileCenterPart/ProfileCenterPart";
 import {connect, useSelector} from "react-redux";
 import {
     setStatusThunk,
-    setUserThunk, toggleOverlay, updateProfileThunk, updateStatusThunk, updateAvatarThunk,
+    setUserThunk,
+    toggleOverlay,
+    updateProfileThunk,
+    updateStatusThunk,
+    updateAvatarThunk,
+    toggleIsCurrentProfileFollowed,
 } from "../../redux/profile/profileSlice";
 import ProfileLeftPart from "./LeftPart";
 import ProfileRightPart from "./RightPart";
-import {getFriendsThunk, unfollowFriendThunk} from "../../redux/userSlice";
+import {followUserThunk, unfollowFriendThunk, unFollowUserThunk} from "../../redux/userSlice";
 import * as Yup from "yup";
 import {useFormik} from "formik";
-import {getContactIcon} from "../../redux/profile/contactsRef";
-import {aboutData, isLookingForAJobData} from "../../redux/profile/constants";
+import {getContactIcon} from "../../common/commonFuncs";
+import {aboutData, isLookingForAJobData} from "../../common/commonData";
 
 const ProfileContainer = ({
                               updateProfileThunk,
                               toggleOverlay,
-                              getFriendsThunk,
                               userIdRouterParam,
                               unfollowFriendThunk,
                               updateStatusThunk,
                               updatePhotoThunk,
+                              followUserThunk,
+                              toggleIsCurrentProfileFollowed,
                           }) => {
 
     const aboutDataFetch = useSelector(state => state.profilePage.aboutDataFetch)
     const nameDataFetch = useSelector(state => state.profilePage.nameDataFetch)
     const isLookingForAJobDataFetch = useSelector(state => state.profilePage.isLookingForAJobDataFetch)
     const jobDescriptionDataFetch = useSelector(state => state.profilePage.jobDescriptionDataFetch)
+    const followUserFetch = useSelector(state => state.usersPage.followUserFetch)
 
     const aboutDataUploadStatus = useSelector(state => state.profilePage.aboutDataUploadStatus)
     const nameDataUploadStatus = useSelector(state => state.profilePage.nameDataUploadStatus)
     const isLookingForAJobDataUploadStatus = useSelector(state => state.profilePage.isLookingForAJobDataUploadStatus)
     const jobDescriptionDataUploadStatus = useSelector(state => state.profilePage.jobDescriptionUploadStatus)
 
-    useEffect(() => {
-        aboutDataFetch && console.log(aboutDataFetch)
-    }, [aboutDataFetch])
-    const userId = useSelector(state => state.auth.id)
+    const currentUserId = useSelector(state => state.auth.id)
     const email = useSelector(state => state.auth.email)
     const profile = useSelector(state => state.profilePage.profile)
     const userPhotos = useSelector(state => state.profilePage.userPhotos)
     const status = useSelector(state => state.profilePage.status)
     const notFound = useSelector(state => state.profilePage.notFound)
-    const defaultAvatar = useSelector(state => state.dialogsPage.defaultAvatar)
     const friends = useSelector(state => state.usersPage.friends)
     const directEditMode = useSelector(state => state.settings.directEditMode)
     const showMobileVersion = useSelector(state => state.settings.showMobileVersion)
     const nightMode = useSelector(state => state.settings.nightMode)
-    const fetchPersonalData = useSelector(state => state.common.fetchPersonalData)
     const fetchStatusData = useSelector(state => state.profilePage.fetchStatusData)
     const statusDataUploadStatus = useSelector(state => state.profilePage.statusDataUploadStatus)
     const profileInitialized = useSelector(state => state.app.profileInitialized)
     const contactsArray = useSelector(state => state.profilePage.contacts)
+    const isCurrentProfileFollowed = useSelector(state => state.profilePage.isCurrentProfileFollowed)
 
-    const isCurrentUser = userIdRouterParam === userId.toString()
+    const defaultAvatar = require("../common/default-avatar.jfif")
+
+    const userIdRouterParamNumber = parseInt(userIdRouterParam)
+    const isCurrentUsersPage = userIdRouterParamNumber === currentUserId
 
     const [nameEditMode, setNameEditMode] = useState(false)
     const [contactsBlockEditMode, setContactsBlockEditMode] = useState(false)
 
-    useEffect(() => {
-        if (isCurrentUser) {
-            getFriendsThunk(100)
-        }
-    }, [])
-
     const {
+        userId,
         fullName,
         aboutMe,
-        photos: {large: largePhoto},
+        photos: {large: largePhoto, small: smallPhoto},
         contacts: {youtube, instagram, github, vk, website, twitter, facebook}
     } = profile
 
 
     //Common
     const pointerCursor = {
-        cursor: directEditMode && isCurrentUser ? "pointer" : "default"
+        cursor: directEditMode && isCurrentUsersPage ? "pointer" : "default"
     }
 
     ///////////////// Left Part
@@ -93,7 +94,7 @@ const ProfileContainer = ({
 
     const {values, errors} = aboutFormik
     const toggleAboutEditMode = (editMode, setEditMode) => {
-        if (isCurrentUser && !editMode && directEditMode) {
+        if (!editMode && directEditMode) {
             setEditMode(true)
         } else if (editMode === true && !errors.about) {
             setEditMode(false)
@@ -111,7 +112,7 @@ const ProfileContainer = ({
 
     const profileLeftPartProps = [aboutFormik.values, aboutFormik.errors, aboutFormik.handleChange,
         aboutEditMode, setAboutEditMode, email, toggleAboutEditMode, aboutBlockStyle, aboutDataFetch]
-    const commonProps = [isCurrentUser, pointerCursor, nightMode, userId, notFound]
+    const commonProps = [isCurrentUsersPage, pointerCursor, nightMode, currentUserId, notFound, directEditMode]
 
     //////Status block
     const [statusEditMode, setStatusEditMode] = useState(false)
@@ -128,7 +129,7 @@ const ProfileContainer = ({
         if (statusEditMode) {
             setStatusEditMode(false)
             updateStatusThunk(statusValue)
-        } else if (!statusEditMode && isCurrentUser) {
+        } else if (!statusEditMode && isCurrentUsersPage) {
             setStatusEditMode(true)
         }
     }
@@ -138,7 +139,7 @@ const ProfileContainer = ({
     ////////// Avatar & contacts block
     const hiddenFileInput = React.useRef(null);
     const uploadPhoto = (e) => updatePhotoThunk(e.target.files[0])
-    const handleAvatarClick = () => isCurrentUser ? hiddenFileInput.current.click() : void 0;
+    const handleAvatarClick = () => isCurrentUsersPage ? hiddenFileInput.current.click() : void 0;
     const contactUrlError = Yup.string().matches(/((https?):\/\/)?(www.)?[a-z\d]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z\d#]+)*\/?(\?[a-zA-Z\d-_]+=[a-zA-Z\d-%]+&?)?$/, 'Enter correct url!').nullable()
     const avatarBlockFormik = useFormik({
         initialValues: {
@@ -154,7 +155,7 @@ const ProfileContainer = ({
         },
 
         validationSchema: Yup.object({
-            fullName: Yup.string().required(),
+            fullName: Yup.string().required("Name is required"),
             vk: contactUrlError,
             facebook: contactUrlError,
             instagram: contactUrlError,
@@ -168,7 +169,7 @@ const ProfileContainer = ({
     const avatarBlockFormikValues = avatarBlockFormik.values
 
     const toggleAvatarBlockEditMode = (editMode, setEditMode, fetchData) => {
-        if (!editMode && isCurrentUser && directEditMode) {
+        if (!editMode && isCurrentUsersPage && directEditMode) {
             setEditMode(true)
         } else if (editMode && !avatarBlockFormik.errors.name) {
             setEditMode(false)
@@ -204,10 +205,30 @@ const ProfileContainer = ({
         return {...contact, value, icon}
     }) : []
 
+    const handleFollowUser = async ({isCurrentProfileFollowed, friendIdParam}) => {
+        if (!isCurrentProfileFollowed && !friendIdParam) {
+            await followUserThunk({
+                userId,
+                userData: {
+                    followed: true,
+                    id: userId,
+                    name: fullName,
+                    status,
+                    photos: {large: largePhoto, small: smallPhoto}
+                }
+            })
+        } else {
+            await unfollowFriendThunk({friendId: friendIdParam ? friendIdParam : userId})
+        }
+        toggleIsCurrentProfileFollowed(friendIdParam ? false : !isCurrentProfileFollowed)
+
+    }
+
     const profileAvatarProps = [avatarBlockFormik.handleSubmit, avatarBlockFormik.handleChange, uploadPhoto,
         handleAvatarClick, nameEditMode, setNameEditMode, contactsBlockEditMode, setContactsBlockEditMode,
         avatarBlockFormik.values, avatarBlockFormik.errors, toggleAvatarBlockEditMode,
-        handleContactBlockEditMode, contactsData, pointerCursor, hiddenFileInput, largePhoto, nameDataFetch, nameDataUploadStatus]
+        handleContactBlockEditMode, contactsData, pointerCursor, hiddenFileInput, largePhoto, nameDataFetch,
+        nameDataUploadStatus, handleFollowUser, isCurrentProfileFollowed, followUserFetch, userId]
 
     /////////////Profile Data
     const {lookingForAJob, lookingForAJobDescription: description} = profile
@@ -224,7 +245,7 @@ const ProfileContainer = ({
     const {values: dataValues} = profileFormik
 
     const toggleProfileDataEditMode = (editMode, setEditMode, fetchData) => {
-        if (isCurrentUser && !editMode && directEditMode) {
+        if (isCurrentUsersPage && !editMode && directEditMode) {
             setEditMode(true)
         } else if (editMode && !errors.description) {
             setEditMode(false)
@@ -247,7 +268,7 @@ const ProfileContainer = ({
         })
     }
 
-    const directEditFunc = isCurrentUser && directEditMode
+    const directEditFunc = isCurrentUsersPage && directEditMode
 
     const jobDescriptionStyle = {
         "border": errors.applicantDescription ? "solid red" : descriptionEditMode && !errors.applicantDescription ? "solid yellow" : null,
@@ -263,26 +284,25 @@ const ProfileContainer = ({
     ]
 
     //Right Part
-    const handleUnfollowFriend = (friendId, index) => unfollowFriendThunk({friendId, index})
-
     const handleSelectedPhoto = (index) => {
         toggleOverlay({showOverlay: true, showPhotoViewPort: true, index})
     }
+
 
     return (
         <div className={"profile-main-container"}>
             {!showMobileVersion &&
                 <ProfileLeftPart {...{profileLeftPartProps, commonProps}}/>}
             <ProfileCenterPart  {...{
-                fullName, largePhoto, isCurrentUser, notFound, directEditMode, defaultAvatar,
+                fullName, largePhoto, isCurrentUser: isCurrentUsersPage, notFound, directEditMode, defaultAvatar,
                 userPhotos, showOverlayAC: toggleOverlay, friends, nightMode,
-                updatePhotoTC: updatePhotoThunk, showMobileVersion, fetchPersonalData, profileAvatarProps, statusProps,
+                updatePhotoTC: updatePhotoThunk, showMobileVersion, profileAvatarProps, statusProps,
                 profileDataProps,
             }}/>
             {!showMobileVersion &&
                 <ProfileRightPart {...{
                     defaultAvatar, friends, userPhotos, handleSelectedPhoto,
-                    nightMode, handleUnfollowFriend
+                    nightMode, followUserFetch, userId, handleFollowUser
                 }}/>}
         </div>
     )
@@ -294,9 +314,11 @@ export default connect(
         setUserThunk,
         setStatusThunk,
         toggleOverlay,
-        getFriendsThunk,
+        toggleIsCurrentProfileFollowed,
         updateProfileThunk,
         updateStatusThunk,
+        followUserThunk,
+        unFollowUserThunk,
         unfollowFriendThunk,
         updateAvatarThunk,
     }

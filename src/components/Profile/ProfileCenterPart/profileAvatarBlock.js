@@ -1,8 +1,7 @@
 import React from 'react';
 import Status from "./Status";
 import {Link} from "react-router-dom";
-import {fetchUiSpin} from "../../../redux/commonSlice";
-import {nameData} from "../../../redux/profile/constants";
+import {fetchUiSpin, nameData} from "../../../common/commonData";
 
 const ProfileAvatarBlock = ({
                                 isCurrentUser,
@@ -13,7 +12,8 @@ const ProfileAvatarBlock = ({
                             }) => {
     const [handleSubmit, handleChange, uploadPhoto, handleAvatarClick, nameEditMode, setNameEditMode,
         contactsBlockEditMode, setContactsBlockEditMode, values, errors, toggleProfileDataEditMode,
-        handleContactBlockEditMode, contactsData, pointerCursor, hiddenFileInput, avatar, nameDataFetch, nameDataUploadStatus] = profileAvatarProps
+        handleContactBlockEditMode, contactsData, pointerCursor, hiddenFileInput, avatar, nameDataFetch,
+        nameDataUploadStatus, handleFollowUser, isCurrentProfileFollowed, followUserFetch, userId] = profileAvatarProps
 
     return (
         <div className="profile-page-center-avatarBlockContainer">
@@ -32,7 +32,8 @@ const ProfileAvatarBlock = ({
                            onClick={() => toggleProfileDataEditMode(nameEditMode, setNameEditMode)}
                            className={nameDataUploadStatus ? "profile-page-left-part-name-uploaded" : "profile-page-userName"}>{
                             nameEditMode ?
-                                <input style={{"border": errors.fullName ? "solid red thin" : "solid thin"}} type={"text"}
+                                <input style={{"border": errors.fullName ? "solid red thin" : "solid thin"}}
+                                       type={"text"}
                                        id={"fullName"}
                                        className={"name-input"} onChange={handleChange}
                                        value={values.fullName} autoFocus={true} onBlur={() =>
@@ -42,6 +43,7 @@ const ProfileAvatarBlock = ({
                     <Status  {...{statusProps}}/>
                     <div className={"profile-page-left-contacts-block"}>
                         {contactsData.map(contact => <span style={{"color": !contact.value && "gray"}}
+                                                           key={contact.id}
                                                            className={`profile-page-left-contact profile-page-left-contact-${contact.id}Icon`}>
                         {contact ? <Link
                             style={{"cursor": !contact.value && "default"}}
@@ -55,6 +57,11 @@ const ProfileAvatarBlock = ({
                         style={{"cursor": "pointer"}}
                         onClick={() => toggleProfileDataEditMode(contactsBlockEditMode, setContactsBlockEditMode)}>{contactsBlockEditMode ? "Choose contacts to edit" : "Edit Contacts"}</p> : null}
                 </div>
+                {!isCurrentUser &&
+                    <button disabled={followUserFetch === userId}
+                            onClick={() => handleFollowUser({isCurrentProfileFollowed})}
+                            className={"profile-follow-btn"}>{isCurrentProfileFollowed ? "Unfollow" : "Follow"}</button>}
+
             </form>
         </div>
     );

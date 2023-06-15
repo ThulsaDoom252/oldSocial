@@ -1,7 +1,6 @@
 import {Link} from "react-router-dom";
 import React from "react";
 
-
 const SignIn = ({
                     handleSubmit,
                     values,
@@ -12,18 +11,18 @@ const SignIn = ({
                     authError,
                     loginFetch,
                     errorMessage,
-                    captcha
+                    captcha,
                 }) => {
     return (
-        <form onSubmit={handleSubmit}>
+        <form  className={"signIn-form"} onSubmit={handleSubmit}>
             <div className={"signIn-container"}>
                 <div>
-                    <p className={"signIn-welcome-title"}>Welcome to React students community</p>
+                    <p className={"signIn-title"}>Welcome to React students community</p>
                     <p className={"signIn-label"}>Sign in</p>
                     <div className={"signIn-inputs-container"}>
                         {errors.email && touched.email ?
                             <p className={"signIn-input-error"}>{errors.email}</p> : null}
-                        <input className={"signIn-inputs"}
+                        <input className={"signIn-input"}
                                id={"email"}
                                type="text"
                                placeholder={"userName"}
@@ -36,7 +35,7 @@ const SignIn = ({
                         {touched.password && errors.password ?
                             <p className={"signIn-input-error"}>{errors.password}</p> : null}
                         <p className={"signIn-input-error"}>{errors.password && touched.password}</p>
-                        <input className={"signIn-inputs"}
+                        <input className={"signIn-input"}
                                id={"password"}
                                placeholder={"password"}
                                type="password"
@@ -45,18 +44,6 @@ const SignIn = ({
                                onBlur={handleBlur}
                         />
                     </div>
-                    {captcha &&
-                        <div className={"signIn-captcha-block"}>
-                            <img
-                                src={captcha}
-                                alt={'captcha'}
-                            />
-                            <div>
-                                <input className={"signIn-captcha-input"} placeholder={'enter symbols'}
-                                       value={values.antiBotSymbols} onChange={handleChange}
-                                       id={'antiBotSymbols'}/>
-                            </div>
-                        </div>}
                     <div className={"rememberMe-container"}>
                         <input
                             id={"rememberMe"}
@@ -66,6 +53,21 @@ const SignIn = ({
                             onChange={handleChange}/>
                         <label>Remember me</label>
                     </div>
+                    {captcha &&
+                        <div className={"signIn-captcha-block"}>
+                            <div className={"captcha-image-item"}>
+                                <img
+                                    className={"captcha-image"}
+                                    src={captcha}
+                                    alt={'captcha'}
+                                />
+                            </div>
+                            <div>
+                                <input className={"signIn-captcha-input"} placeholder={'enter symbols'}
+                                       value={values.antiBotSymbols} onChange={handleChange}
+                                       id={'antiBotSymbols'}/>
+                            </div>
+                        </div>}
                     <div className={"signIn-btn-container"}>
                         <button className={authError ? "signIn-btn-error" : "signIn-btn"} type={"submit"}
                                 disabled={loginFetch}>

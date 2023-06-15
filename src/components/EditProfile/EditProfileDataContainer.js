@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useFormik} from 'formik'
 import * as Yup from "yup";
 import {connect} from "react-redux";
 import {updateAvatarThunk, updateProfileThunk} from "../../redux/profile/profileSlice";
 import EditProfileData from "./EditProfileData";
-import {allData} from "../../redux/profile/constants";
+import {allData} from "../../common/commonData";
 
 const EditProfileDataContainer = ({
                                       email,
@@ -13,11 +13,9 @@ const EditProfileDataContainer = ({
                                       photos,
                                       userDataUploadStatus,
                                       fetchUserData,
-                                      updatePhotoTC,
-                                      updateProfileTC,
+                                      updateAvatarThunk,
+                                      updateProfileThunk,
                                   }) => {
-
-    window.fetchUserData = fetchUserData
 
     const {fullName: name, aboutMe: about, lookingForAJob: applicant, lookingForAJobDescription: description} = profile
     const [facebook, website, vk, twitter, instagram, youtube, github, mainLink] = contacts
@@ -27,11 +25,11 @@ const EditProfileDataContainer = ({
     const hiddenFileInput = React.useRef(null);
 
     const uploadPhoto = (e) => {
-        updatePhotoTC(e.target.files[0])
+        updateAvatarThunk(e.target.files[0])
     }
     const handleAvatarClick = event => hiddenFileInput.current.click()
 
-    const {handleSubmit, handleChange, values, errors} = useFormik({
+    const {handleSubmit, handleChange, values, errors, setFieldValue} = useFormik({
         initialValues: {
             name, about, applicant, description,
             website: website.value,
@@ -45,15 +43,15 @@ const EditProfileDataContainer = ({
 
         },
         validationSchema: Yup.object({
-            name: Yup.string().min(3, 'Name must be longer than 3 characters').required(),
-            about: Yup.string().min(3, 'Must contain more than 3 characters!').required(),
-            description: Yup.string().min(3, 'Description must contain more than 3 characters!').nullable().required(),
+            name: Yup.string().min(3, 'Name must be longer than 3 characters').required("required field"),
+            about: Yup.string().min(3, 'Must contain more than 3 characters!').required("required field"),
+            description: Yup.string().min(3, 'Description must contain more than 3 characters!').nullable().required("required field"),
 
         }),
         onSubmit: ({
                        name,
                        about,
-                       isApplicant,
+                       applicant,
                        description,
                        website,
                        vk,
@@ -64,13 +62,19 @@ const EditProfileDataContainer = ({
                        github,
                        mainlink
                    }) => {
-            updateProfileTC({
-                about, isApplicant, description, name, github, vk, facebook, instagram,
+            updateProfileThunk({
+                about, isApplicant: applicant, description, name, github, vk, facebook, instagram,
                 twitter, website, youtube, mainlink, fetchData: allData,
             })
 
         }
     })
+
+    const handleApplicantData = (data) => {
+        setFieldValue("applicant", data)
+    }
+
+    window.applicant = values.applicant
 
     const contactsData = contacts.map(contact => ({
         ...contact,
@@ -83,6 +87,7 @@ const EditProfileDataContainer = ({
     return <EditProfileData {...{
         contactsData,
         handleSubmit,
+        handleApplicantData,
         handleChange,
         values,
         hiddenFileInput,
@@ -110,5 +115,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    updateProfileTC: updateProfileThunk, updatePhotoTC: updateAvatarThunk
+    updateProfileThunk, updateAvatarThunk
 })(EditProfileDataContainer);

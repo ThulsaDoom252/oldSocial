@@ -5,7 +5,7 @@ import {
 
 import {FaRegComment} from "react-icons/fa"
 
-const ReactionsBar = (props) => {
+const ReactionsBar = () => {
     const [likes, likesNumber] = useState(0)
     const [dislikes, dislikesNumber] = useState(0)
 

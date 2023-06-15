@@ -1,5 +1,5 @@
 import React from 'react';
-import {fetchUiSpin} from "../../../redux/commonSlice";
+import {fetchUiSpin} from "../../../common/commonData";
 
 const Status = ({statusProps}) => {
     const [status, statusEditMode, statusValue, statusLengthError, handleChangeStatus, toggleStatusEdit,

@@ -1,6 +1,6 @@
 import React from 'react';
 import noAvatar from "../../common/avatarLoading.jpg"
-import {fetchUiBar} from "../../redux/commonSlice";
+import {fetchUiBar} from "../../common/commonData";
 
 const EditProfileDataEmptyTemplate = () => {
     return (

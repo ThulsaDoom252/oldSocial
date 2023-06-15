@@ -1,7 +1,7 @@
 import React from 'react';
 import {compose} from "redux";
 import {connect, useSelector} from "react-redux";
-import {followUserThunk, getUsersThunk, unfollowUserThunk} from "../../redux/userSlice";
+import {followUserThunk, getUsersThunk, unFollowUserThunk} from "../../redux/userSlice";
 import authHoc from "../HOC/authHoc";
 import {useEffect} from "react";
 import UsersTemplate from "./UsersTemplate";
@@ -23,7 +23,14 @@ const UsersRelay = ({getUsersThunk, followUserThunk, unFollowUserThunk}) => {
         return <UsersTemplate/>
     }
 
-    return <UsersContainer {...{currentPage, pageSize, getUsersThunk, followUserThunk, unFollowUserThunk, usersPerPage}}/>
+    return <UsersContainer {...{
+        currentPage,
+        pageSize,
+        getUsersThunk,
+        followUserThunk,
+        unFollowUserThunk,
+        usersPerPage
+    }}/>
 };
 
 const mapStateToProps = (state) => {
@@ -36,5 +43,5 @@ const mapStateToProps = (state) => {
 export default compose(connect(mapStateToProps, {
     getUsersThunk,
     followUserThunk,
-    unfollowUserThunk
+    unFollowUserThunk
 }), authHoc)(UsersRelay)

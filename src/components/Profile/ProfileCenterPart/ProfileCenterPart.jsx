@@ -17,7 +17,6 @@ const ProfileCenterPart = ({
                                friends,
                                nightMode,
                                showMobileVersion,
-                               fetchPersonalData,
                                profileAvatarProps,
                                statusProps,
                                profileDataProps,
@@ -38,11 +37,11 @@ const ProfileCenterPart = ({
                 <ProfileAvatarBlock {...{
                     isCurrentUser, directEditMode, defaultAvatar, profileAvatarProps, statusProps,
                 }}/>
-                <ProfileData {...{isCurrentUser, fetchPersonalData, profileDataProps}}/>
+                <ProfileData {...{isCurrentUser, profileDataProps}}/>
             </div>
             {isCurrentUser && <div style={{"display": showMobileVersion && "block"}} className={"mobile-friends-block"}>
                 <div className={"center-friends-block"}>
-                    {friends.map((friend, index) => index < 4 && <div className={"center-friend-block"}><img
+                    {friends.map((friend, index) => index < 4 && <div className={"center-friend-block"} key={index}><img
                         src={friend.photos.small ? friend.photos.small : defaultAvatar}
                         alt={`photo${index}`}/><p>{friend.name}</p></div>)}
                 </div>
@@ -50,7 +49,8 @@ const ProfileCenterPart = ({
             </div>}
             {isCurrentUser && <div style={{"display": showMobileVersion && "block"}} className={"mobile-gallery-block"}>
                 <div className={"photos-block"}>
-                    {userPhotos.map((photo, index) => <div className={"center-gallery-photo-block"}>{index < 4 &&
+                    {userPhotos.map((photo, index) => <div className={"center-gallery-photo-block"}
+                                                           key={index}>{index < 4 &&
                         <img className={"center-gallery-photo"}
                              onClick={() => showOverlayAC({toggleRelay: true, toggleViewPort: true, index})}
                              src={photo}
@@ -58,7 +58,7 @@ const ProfileCenterPart = ({
                 </div>
                 <NavLink to={"/gallery"} className={"center-gallery-button"}>To gallery</NavLink>
             </div>}
-           <ProfileWall {...{fullName, largePhoto, defaultAvatar}}/>
+            <ProfileWall {...{fullName, largePhoto, defaultAvatar}}/>
         </div>
 
     )

@@ -11,9 +11,8 @@ const HeaderContainer = ({dispatch}) => {
     const nightMode = useSelector(state => state.settings.nightMode)
     const userId = useSelector(state => state.auth.id)
     const currentUserAvatar = useSelector(state => state.profilePage.currentUserAvatar)
-    const fetching = useSelector(state => state.common.fetchAuthData)
     useEffect(() => {
-        setCurrentUserAvatarThunk(`${userId}`)
+        dispatch(setCurrentUserAvatarThunk(`${userId}`))
     }, [])
 
     const handleLogOut = async () => {
@@ -21,7 +20,7 @@ const HeaderContainer = ({dispatch}) => {
     }
 
     return (
-        <Header {...{isLogged, userName, nightMode, userId, currentUserAvatar, fetching, handleLogOut}}/>
+        <Header {...{isLogged, userName, nightMode, userId, currentUserAvatar, handleLogOut}}/>
     );
 };
 

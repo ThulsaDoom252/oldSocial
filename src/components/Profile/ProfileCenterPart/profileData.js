@@ -1,13 +1,12 @@
 import React from 'react';
-import {fetchUiSpin} from "../../../redux/commonSlice";
-import {lookingForAJobDataInfo} from "../../../redux/profile/constants";
+import {fetchUiSpin, lookingForAJobDataInfo} from "../../../common/commonData";
 
-const ProfileData = ({isCurrentUser, fetchPersonalData, profileDataProps}) => {
+const ProfileData = ({isCurrentUser, profileDataProps}) => {
     const [handleChange, values, errors, toggleProfileEditMode,
         descriptionEditMode, setDescriptionEditMode, centerProfileAboutEditMode, setCenterProfileAboutEditMode,
         directEditFunc, jobDescriptionStyle, pointerCursor,
         aboutBlockStyle, isLookingForAJobDataFetch, isLookingForAJobDataUploadStatus, jobDescriptionDataFetch, jobDescriptionDataUploadStatus,
-       handleChangeIsLookingForAJobInfo
+        handleChangeIsLookingForAJobInfo
     ] = profileDataProps
 
     return (
@@ -20,7 +19,7 @@ const ProfileData = ({isCurrentUser, fetchPersonalData, profileDataProps}) => {
             <div
                 style={jobDescriptionStyle}
                 className={`user-data-block ${jobDescriptionDataUploadStatus && "user-data-block-uploaded"}`}>
-                {fetchPersonalData ? fetchUiSpin : descriptionEditMode ?
+                {descriptionEditMode ?
                     <input id={"applicantDescription"} className={"job-description-input"}
                            onChange={handleChange}
                            onBlur={() => toggleProfileEditMode(descriptionEditMode, setDescriptionEditMode, lookingForAJobDataInfo)}
@@ -31,7 +30,7 @@ const ProfileData = ({isCurrentUser, fetchPersonalData, profileDataProps}) => {
             </div>
             {errors.applicantDescription && <p className={"profile-page-input-error"}>{errors.applicantDescription}</p>}
             <div style={aboutBlockStyle} className={"user-data-block-about"}>
-                {fetchPersonalData ? fetchUiSpin : centerProfileAboutEditMode ?
+                {centerProfileAboutEditMode ?
                     <input id={"about"} className={"about-description-input"} onChange={handleChange}
                            onBlur={() => toggleProfileEditMode(centerProfileAboutEditMode, setCenterProfileAboutEditMode)}
                            autoFocus={true}

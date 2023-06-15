@@ -16,6 +16,8 @@ const SettingsContainer = ({
                            }) => {
     const [currentSettingsGroup, setCurrentSettingsGroup] = useState(1)
 
+    const handleChange = () => void 0
+
     const handleCurrentSettingsGroup = (number) => setCurrentSettingsGroup(number)
 
     return <Settings {...{
@@ -24,9 +26,10 @@ const SettingsContainer = ({
         showMobileVersion,
         toggleNightMode,
         toggleDirectEditMode,
+        handleChange,
         toggleMobileVersion,
         handleCurrentSettingsGroup,
-        currentSettingsGroup
+        currentSettingsGroup,
     }}/>
 }
 

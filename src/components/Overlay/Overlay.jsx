@@ -8,10 +8,11 @@ const Overlay = ({
     return (
         <div className={"overlay"}>
             <button className={"overlay-close-btn"} onClick={handleCloseOverlay}><AiOutlineClose/></button>
-            <div hidden={!photoViewPort} className={"overlay-photo-item"}>
+            {photoViewPort && <div className={"overlay-photo-item"}>
                 <img className={"overlay-photo"} src={require(`../../redux/profile/${userPhotos[selectedPhoto]}`)}
                      alt="photo"/>
-            </div>
+            </div>}
+
             <form hidden={photoViewPort}>
                 <div className={"profile-contact-viewport"}>
                     <input type="text" value={selectedContact}

@@ -8,25 +8,30 @@ const UsersContainer = ({
                             usersPerPage,
                             getUsersThunk,
                             followUserThunk,
-                            unfollowUserThunk
+                            unFollowUserThunk
                         }) => {
+
 
     const totalCount = useSelector(state => state.usersPage.totalCount)
     const nightMode = useSelector(state => state.app.nightMode)
-    const followingProgress = useSelector(state => state.usersPage.followingProgress)
+    const followUserFetch = useSelector(state => state.usersPage.followUserFetch)
     const users = useSelector(state => state.usersPage.users)
 
-    const handleFollowUser = (userId) => followUserThunk(userId)
-    const handleUnFollowUser = (userId) => unfollowUserThunk(userId)
+    const handleFollowUser = (userId, isFollowed) => {
+        if(isFollowed) {
+            unFollowUserThunk({userId})
+        } else {
+            followUserThunk({userId})
+        }
+    }
 
-    const truncateUserData = (userName) => userName.length > 7 ? userName.slice(0, 7) + '...' : userName
-
+    const defaultAvatar = require("../common/default-avatar.jfif")
     ///Paginator
     const handlePageChange = (currentPage) => getUsersThunk({currentPage, usersPerPage})
-    const paginatorProps = [currentPage, totalCount, pageSize, handlePageChange]
+    const paginatorProps = [currentPage, pageSize, handlePageChange]
     return <Users {...{
-        nightMode, users, followingProgress,
-        handleFollowUser, handleUnFollowUser, truncateUserData, paginatorProps
+        nightMode, users, followUserFetch,
+        handleFollowUser, defaultAvatar, totalCount, paginatorProps
     }}/>
 }
 

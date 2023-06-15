@@ -2,10 +2,10 @@ import React from 'react';
 import {useEffect} from "react";
 import {avatarAC, setCurrentUserAvatarThunk} from "../../redux/profile/profileSlice";
 import {logOutThunk} from "../../redux/authSlice";
-import {delay} from "../../redux/commonRefs";
 import {useSelector} from "react-redux";
 import {toggleNightModeAC} from "../../redux/settingsSlice";
 import Header from "./Header";
+import {delay} from "../../common/commonFuncs";
 
 const HeaderContainer = ({dispatch}) => {
     const isLogged = useSelector(state => state.auth.isLogged)

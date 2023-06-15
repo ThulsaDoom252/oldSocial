@@ -1,12 +1,12 @@
 import React from 'react';
-import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {nightModeStyles} from "../../common/nightModeStyles";
-import {fetchUiSpin} from "../../redux/commonSlice";
+import {FaRegEdit} from "react-icons/fa";
+import {fetchUiSpin} from "../../common/commonData";
 
 const LeftPart = ({profileLeftPartProps, commonProps}) => {
     const [values, errors, handleChange, aboutEditMode, setAboutEditMode, email, toggleAboutEditMode, aboutBlockStyle,
-         aboutDataFetch] = profileLeftPartProps
-    const [isCurrentUser, pointerCursor, nightMode, userId] = commonProps
+        aboutDataFetch] = profileLeftPartProps
+    const [isCurrentUser, pointerCursor, nightMode, userId, notFound, directEditMode] = commonProps
 
     return (
         <div style={nightMode ? nightModeStyles.profileLeft : null}
@@ -19,9 +19,13 @@ const LeftPart = ({profileLeftPartProps, commonProps}) => {
                 <div
                     style={pointerCursor}
                     className={"profile-page-left-part-about-block"}>
-                    <span className={"profile-page-left-part-label"}>About</span>
-                    <p style={aboutBlockStyle} className={"profile-page-left-part-about"}
-                       onClick={() => toggleAboutEditMode(aboutEditMode, setAboutEditMode)}>
+                    <span
+                        className={"profile-page-left-part-label"}>About {directEditMode && !aboutEditMode && isCurrentUser &&
+                        <FaRegEdit
+                            className={"edit-data-icon"}
+                            onClick={() => toggleAboutEditMode(aboutEditMode, setAboutEditMode)}
+                        />}</span>
+                    <p style={aboutBlockStyle} className={"profile-page-left-part-about"}>
                         {aboutEditMode ?
                             <input id={"aboutMe"} onBlur={() => toggleAboutEditMode(aboutEditMode, setAboutEditMode)}
                                    className={"about-input"} onChange={handleChange} type={"text"}
@@ -34,9 +38,6 @@ const LeftPart = ({profileLeftPartProps, commonProps}) => {
                     <p className={"profile-page-left-part-label"}>Email</p>
                     {isCurrentUser ? email : "No email"}
                 </div>
-            </div>
-            <div className={"profile-page-left-part-button"}>
-                <button><HiOutlineDotsHorizontal/></button>
             </div>
         </div>
     );

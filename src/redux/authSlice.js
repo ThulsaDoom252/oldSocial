@@ -10,7 +10,7 @@ const authSlice = createSlice({
         login: null,
         isLogged: false,
         error: false,
-        captcha: null,
+        captcha: false,
         errorMessage: null,
         loginFetch: false,
     },
@@ -67,13 +67,13 @@ export const getCaptchaThunk = () => {
 
 
 export const loginThunk = createAsyncThunk('main-login-thunk', async ({
-                                                                           email,
-                                                                           password,
-                                                                           rememberMe,
-                                                                           antiBotSymbols
-                                                                       }, {dispatch}) => {
+                                                                          email,
+                                                                          password,
+                                                                          rememberMe,
+                                                                          antiBotSymbols
+                                                                      }, {dispatch}) => {
     await dispatch(toggleAuthFetch(true))
-    const data = await loginApi.login(email, password, rememberMe, antiBotSymbols)
+    const data = await loginApi.logIn(email, password, rememberMe, antiBotSymbols)
     if (data.resultCode === 0) {
         dispatch(getAuthDataThunk())
         dispatch(errorAC(false))
@@ -91,7 +91,7 @@ export const loginThunk = createAsyncThunk('main-login-thunk', async ({
 })
 
 export const logOutThunk = createAsyncThunk('logout-thunk', async (_, {dispatch}) => {
-    const data = await loginApi.logout()
+    const data = await loginApi.logOut()
     data.resultCode === 0 && dispatch(getAuthDataThunk())
 
 })

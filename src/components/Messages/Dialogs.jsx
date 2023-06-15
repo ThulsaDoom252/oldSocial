@@ -2,7 +2,17 @@ import React from "react";
 import {FiInfo, FiPhoneCall, FiVideo} from "react-icons/fi";
 import {BiMessageAltEdit,} from "react-icons/bi"
 
-const Dialogs = ({nightModeStyles, nightMode, randomUsers, senderId, userAvatars, currentUserName, userNames, handleSenderId, defaultAvatar}) => {
+const Dialogs = ({
+                     nightModeStyles,
+                     nightMode,
+                     randomUsers,
+                     senderId,
+                     userAvatars,
+                     currentUserName,
+                     userNames,
+                     handleSenderId,
+                     defaultAvatar
+                 }) => {
     return <div style={nightMode ? nightModeStyles.centerBlock : null} className={"message-page-container"}>
         <div className={"message-page-left-part"}>
             <div className={"new-message-block"}>
@@ -11,7 +21,7 @@ const Dialogs = ({nightModeStyles, nightMode, randomUsers, senderId, userAvatars
             </div>
             <div className={"message-page-sender-block"}>
                 {randomUsers.map((user, index) => <div
-                    style={{"background-color": index === senderId ? "gray" : null}} key={index}
+                    style={{"backgroundColor": index === senderId ? "gray" : null}} key={index}
                     onClick={() => handleSenderId(index)}
                     className={"message-page-user"}>
                     <img className={"message-page-user-avatar"}
@@ -22,6 +32,7 @@ const Dialogs = ({nightModeStyles, nightMode, randomUsers, senderId, userAvatars
             </div>
         </div>
         <div className={"message-page-right-part"}>
+            <p className={"page-info"}>*Messages are not functioning for a moment. Just a demo page</p>
             <div className={"sender-block"}>
                 <div>Receiver</div>
                 <div>

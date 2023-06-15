@@ -7,9 +7,8 @@ import {truncateUserData} from "../../common/commonFuncs";
 const Users = ({
                    nightMode,
                    users,
-                   followingProgress,
+                   followUserFetch,
                    handleFollowUser,
-                   handleUnFollowUser,
                    defaultAvatar,
                    paginatorProps,
                    totalCount,
@@ -31,15 +30,9 @@ const Users = ({
                             <p className={"users-page-user-name"} title={user.name}>{truncateUserData(user.name)}</p>
                             <p className={"users-page-user-status"}
                                title={user.status}>{user.status ? truncateUserData(user.status) : 'No status'}</p>
-                            {user.isFollow ?
-                                <button className={"users-page-follow-button"}
-                                        disabled={followingProgress.some(id => id === user.id)}
-                                        onClick={() => handleUnFollowUser(user.id)}>Unfollow</button> :
-                                <button className={"users-page-follow-button"}
-                                        disabled={followingProgress.some(id => id === user.id)}
-                                        onClick={() => {
-                                            handleFollowUser(user.id)
-                                        }}>Follow</button>}
+                            <button className={"users-page-follow-button"}
+                                    disabled={followUserFetch === user.id}
+                                    onClick={() => handleFollowUser(user.id, user.followed)}>{user.followed ? "Unfollow" : "Follow"}</button>
                         </div>
                     </div>
                 )}

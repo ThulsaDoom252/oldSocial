@@ -1,6 +1,9 @@
 import {getAuthDataThunk} from "./authSlice";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {setStatusThunk, setUserThunk} from "./profile/profileSlice";
+import {initializeOptionsThunk} from "./settingsSlice";
+import {apiCaller} from "../api/api";
+import {getFriends} from "./userSlice";
 
 const appSlice = createSlice({
     name: 'app-slice',
@@ -28,8 +31,8 @@ const appSlice = createSlice({
         },
     },
     reducers: {
-        initializeApp(state) {
-            state.initialized = true
+        initializeApp(state, action) {
+            state.initialized = action.payload
         },
         initializeProfile(state, action) {
             state.profileInitialized = action.payload
@@ -43,29 +46,30 @@ export const {initializeApp, initializeProfile} = appSlice.actions
 //THUNKS
 export const initializeAppThunk = createAsyncThunk('initializing-thunk',
     async (_, {dispatch}) => {
-        try {
-            const promise = dispatch(getAuthDataThunk())
-            Promise.all([promise]).then(() => {
-                dispatch(initializeApp())
-            })
-        } catch (error) {
-            console.log(error)
-        }
+        dispatch(initializeApp(false))
+        const initializeAuthData = await dispatch(getAuthDataThunk())
+        const initializeOptions = await dispatch(initializeOptionsThunk())
+        Promise.all([initializeAuthData, initializeOptions]).then(() => {
+            dispatch(initializeApp(true))
+        })
 
     })
 
-export const initializeProfileThunk = createAsyncThunk('initialize-profile-thunk', async (userId, {dispatch}) => {
-    try {
-        debugger
+export const initializeProfileThunk = createAsyncThunk('initialize-profile-thunk', async ({
+                                                                                              userId,
+                                                                                              friendsArray,
+                                                                                              friendsCount,
+                                                                                              profilePageNotFound,
+                                                                                          }, {dispatch}) => {
         dispatch(initializeProfile(false))
-        const initializeUserData = dispatch(setUserThunk(userId))
+        const receivedFriendsArray = friendsArray.length === 0 ? await apiCaller.getFriends(friendsCount) : friendsArray
+        const friends = friendsArray.length === 0 ? receivedFriendsArray.items : receivedFriendsArray
+        const initializeUserFriends = dispatch(getFriends(friends))
+        const initializeUserData = dispatch(setUserThunk({userId, friends, profilePageNotFound}))
         const initializeUserStatus = dispatch(setStatusThunk(userId))
-        Promise.all([initializeUserData, initializeUserStatus]).then(() => {
+        Promise.all([initializeUserData, initializeUserStatus, initializeUserFriends]).then(() => {
             dispatch(initializeProfile(true))
         })
-    } catch (error) {
-        console.log('there was an error during profile initialization: ', error)
-    }
 
 })
 

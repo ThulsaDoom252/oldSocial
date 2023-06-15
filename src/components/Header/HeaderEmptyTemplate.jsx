@@ -1,8 +1,8 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
 import {RiLogoutBoxRLine} from "react-icons/ri";
-import {fetchUiBar, fetchUiHeader} from "../../redux/commonSlice";
 import noAvatar from "../../common/avatarLoading.jpg"
+import {fetchUiBar, fetchUiHeader} from "../../common/commonData";
 
 const HeaderEmptyTemplate = () => {
     return (
